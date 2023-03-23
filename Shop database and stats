@@ -1,29 +1,35 @@
---Create a store database
+--Create a database for a store
 
-CREATE TABLE joanna_shop (id INTEGER PRIMARY KEY, item TEXT, size TEXT, quantity INTEGER, price INTEGER);
+CREATE TABLE clothing_shop (id INTEGER PRIMARY KEY, item TEXT, size TEXT, quantity INTEGER, price INTEGER);
 
-INSERT INTO joanna_shop VALUES(1, "tshirt", "S", 3, 5);
-INSERT INTO joanna_shop VALUES(2, "tshirt", "M", 5, 5);
-INSERT INTO joanna_shop VALUES(3, "tshirt", "L", 2, 5);
-INSERT INTO joanna_shop VALUES(4, "pants", "XS", 1, 5);
-INSERT INTO joanna_shop VALUES(5, "pants", "S", 3, 10);
-INSERT INTO joanna_shop VALUES(6, "pants", "M", 4, 10);
-INSERT INTO joanna_shop VALUES(7, "pants", "L", 1, 10);
-INSERT INTO joanna_shop VALUES(8, "pants", "XL", 2, 10);
-INSERT INTO joanna_shop VALUES(9, "jacket", "S", 3, 15);
-INSERT INTO joanna_shop VALUES(10, "jacket", "M", 4, 15);
-INSERT INTO joanna_shop VALUES(11, "jacket", "L", 1, 15);
-INSERT INTO joanna_shop VALUES(12, "shoes", "S", 2, 20);
-INSERT INTO joanna_shop VALUES(13, "shoes", "M", 2, 20);
-INSERT INTO joanna_shop VALUES(14, "shoes", "L", 2, 20);
-INSERT INTO joanna_shop VALUES(15, "shoes", "XL", 2, 20);
+INSERT INTO clothing_shop VALUES(1, "tshirt", "S", 3, 5);
+INSERT INTO clothing_shop VALUES(2, "tshirt", "M", 5, 5);
+INSERT INTO clothing_shop VALUES(3, "tshirt", "L", 2, 5);
+INSERT INTO clothing_shop VALUES(4, "pants", "XS", 1, 5);
+INSERT INTO clothing_shop VALUES(5, "pants", "S", 3, 10);
+INSERT INTO clothing_shop VALUES(6, "pants", "M", 4, 10);
+INSERT INTO clothing_shop VALUES(7, "pants", "L", 1, 10);
+INSERT INTO clothing_shop VALUES(8, "pants", "XL", 2, 10);
+INSERT INTO clothing_shop VALUES(9, "jacket", "S", 3, 15);
+INSERT INTO clothing_shop VALUES(10, "jacket", "M", 4, 15);
+INSERT INTO clothing_shop VALUES(11, "jacket", "L", 1, 15);
+INSERT INTO clothing_shop VALUES(12, "blouse", "S", 2, 20);
+INSERT INTO clothing_shop VALUES(13, "blouse", "M", 2, 20);
+INSERT INTO clothing_shop VALUES(14, "blouse", "L", 2, 20);
+INSERT INTO clothing_shop VALUES(15, "blouse", "XL", 2, 20);
 
+--Order the items in the  store by price
 
---Display the database ordered by price
+SELECT item, price FROM clothing_shop GROUP BY item ORDER BY price;
 
-SELECT * FROM joanna_shop ORDER BY price;
+--Display the items with a price greater than or equal to 10
 
---What is the maximum number of a single item in the shop
+SELECT item FROM clothing_shop WHERE price >=10 GROUP BY item;
 
-SELECT MAX(quantity) FROM joanna_shop
+--Display the total number of items in the shop
 
+SELECT SUM(quantity) FROM clothing_shop;
+
+--Display the average price of the items at the shop:
+
+SELECT AVG(price) FROM clothing_shop
