@@ -1,0 +1,33 @@
+--In this SQL code, I am querying a data base holding Netflix data
+SELECT * FROM "CharlotteChaze/BreakIntoTech"."netflix_titles_info" LIMIT 5;
+
+--Use a join to join the data from the netflix_title_info table to the netflix_people table
+SELECT * FROM "CharlotteChaze/BreakIntoTech"."netflix_titles_info"
+LEFT OUTER JOIN "CharlotteChaze/BreakIntoTech"."netflix_people"
+ON "CharlotteChaze/BreakIntoTech"."netflix_titles_info".show_id = "CharlotteChaze/BreakIntoTech"."netflix_people".show_id;
+
+
+--How many movie titles are in the database?
+SELECT COUNT(*) FROM "CharlotteChaze/BreakIntoTech"."netflix_titles_info" 
+WHERE type = 'Movie';
+
+
+--When was the most recent batch of tv shows/movies added to the database?
+SELECT MAX(date(date_added)) FROM "CharlotteChaze/BreakIntoTech"."netflix_titles_info";
+
+
+--Sort the movies and tv shows in alphabetical order
+SELECT title FROM "CharlotteChaze/BreakIntoTech"."netflix_titles_info" ORDER BY title ASC;
+
+
+--Who was the director of the movie Bright Star?
+SELECT director FROM "CharlotteChaze/BreakIntoTech"."netflix_titles_info"
+LEFT OUTER JOIN "CharlotteChaze/BreakIntoTech"."netflix_people"
+ON "CharlotteChaze/BreakIntoTech"."netflix_titles_info".show_id = "CharlotteChaze/BreakIntoTech"."netflix_people".show_id
+WHERE "netflix_titles_info".title = 'Bright Star';
+
+
+--What is the oldest movie in the database and from what year is it?
+SELECT title, release_year FROM "CharlotteChaze/BreakIntoTech"."netflix_titles_info"
+WHERE type = 'Movie'
+AND release_year <= (SELECT MIN(release_year) FROM "CharlotteChaze/BreakIntoTech"."netflix_titles_info" WHERE type = 'Movie');
