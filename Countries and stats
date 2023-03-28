@@ -219,35 +219,34 @@ INSERT INTO countries(name,population,percent_one_year_change,population_change,
 INSERT INTO countries(name,population,percent_one_year_change,population_change,density_per_sq_km,area_sq_km,net_migrants,fertility_rate,median_age,percent_of_world_pop) VALUES ('Seychelles',98347,0.62,608,214,460,-200,2.50,34.00,0);
 INSERT INTO countries(name,population,percent_one_year_change,population_change,density_per_sq_km,area_sq_km,net_migrants,fertility_rate,median_age,percent_of_world_pop) VALUES ('Antigua and Barbuda',97929,0.84,811,223,440,0,2.00,34.00,0);
 
---Find the Countries with the Maximum and Minimum Populations
+--Find the countries with the maximum and minimum populations
 SELECT name, MAX(population) AS max_pop FROM countries;
 SELECT name, MIN(population) AS min_pop FROM countries;
 
---Find the Average Poplation in the dataset
-SELECT AVG(population) AS avg_pop_all FROM countries;
 
---Find the Average Percent per year change in population
-SELECT AVG(percent_one_year_change) AS avg_perconeyr_change FROM countries;
-
---Display the countries having 
-SELECT name, AVG(percent_one_year_change) AS avgperc_oneyr_change FROM countries
-GROUP BY name
-HAVING avgperc_oneyr_change > 1.2
-ORDER BY avgperc_oneyr_change;
-
-
-
+--Find the average population change from the data set
 SELECT AVG(population_change) AS avg_pop_change FROM countries;
+
+--Display the country name, population change, and whether the population change was Above Average, Below Average, or Below Average and Negative
 SELECT name, population_change,
-CASE WHEN population_change > 404602 THEN "Above            Average"
+CASE WHEN population_change > 404602 THEN "Above Average"
      WHEN population_change >= 0 THEN "Below Average"
      ELSE "Below Average and Negative"
 END AS "descr_pop_change"
 FROM countries
 ORDER BY population_change;
 
+--Display the net migrants per country
 SELECT name, net_migrants FROM countries;
+
+--Display the countries that had net migrants above 1000 and also greater than 1% population change
 SELECT name, net_migrants, percent_one_year_change FROM countries WHERE net_migrants > 1000 AND percent_one_year_change > 1 ;
 
-
+--Display the countries with median ages above 45 or below 20, displlay the ages as well
 SELECT name, median_age FROM countries WHERE median_age > 45 OR median_age < 20 ORDER BY median_age;
+
+
+--Display the median ages that are the same across 10 or more countries
+SELECT COUNT(name), median_age FROM countries
+GROUP BY median_age
+HAVING COUNT(name) > 10;
