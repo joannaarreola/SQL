@@ -1,0 +1,45 @@
+/* Create tables about female artists and information about them */
+
+CREATE TABLE female_singers 
+(id INTEGER PRIMARY KEY, name TEXT, age INTEGER, hometown TEXT);
+INSERT INTO female_singers VALUES (1, "Taylor Swift", 33, "West Reading");
+INSERT INTO female_singers VALUES (2, "Ariana Grande", 29, "Boca Raton");
+INSERT INTO female_singers VALUES (3, "Doja Cat", 27, "Los Angeles");
+INSERT INTO female_singers VALUES (4, "Billie Eilish", 21, "Los Angeles");
+INSERT INTO female_singers VALUES (5, "Megan Thee Stallion", 28, "San Antonio");
+
+CREATE TABLE songs 
+(singer_id INTEGER, songname TEXT, collab_with INTEGER);
+INSERT INTO songs VALUES (1, "Shake It Off", NULL);
+INSERT INTO songs VALUES (1, "You Belong With Me", NULL);
+INSERT INTO songs VALUES (2, "Motive", 3);
+INSERT INTO songs VALUES (2, "The Way", NULL);
+INSERT INTO songs VALUES (3, "Best Friend", 5);
+INSERT INTO songs VALUES (3, "Say So", NULL);
+INSERT INTO songs VALUES (4, "Bad Guy", NULL);
+INSERT INTO songs VALUES (4, "Ocean Eyes", NULL);
+INSERT INTO songs VALUES (5, "Savage", NULL);
+INSERT INTO songs VALUES (5, "Body", NULL);
+
+CREATE TABLE Genre 
+(name TEXT, genre TEXT);
+INSERT INTO Genre VALUES ("Taylor Swift", "Pop");
+INSERT INTO Genre VALUES ("Ariana Grande", "Pop");
+INSERT INTO Genre VALUES ("Doja Cat", "Hip Hop");
+INSERT INTO Genre VALUES ("Billie Eilish", "Pop");
+INSERT INTO Genre VALUES ("Megan Thee Stallion", "Hip Hop");
+
+
+--Combine the female_singers and Genre tables to list the singer's name, age, and genre
+SELECT female_singers.name, female_singers.age, genre.Genre
+FROM female_singers
+JOIN Genre
+ON female_singers.name = Genre.name;
+
+
+--Use a self join to display the artists' song titles and artist names including collabs
+SELECT artist1.name, artist2.name, songname FROM songs
+LEFT OUTER JOIN female_singers artist1
+ON songs.singer_id = artist1.id
+LEFT OUTER JOIN female_singers artist2
+ON songs.collab_with = artist2.id;
