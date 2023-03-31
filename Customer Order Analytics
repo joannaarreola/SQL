@@ -33,10 +33,42 @@ SELECT product, SUM(quantity), price * SUM(quantity) AS revenue FROM BIT_DB.FebS
 WHERE location = '548 Lincoln St, Seattle, WA 98101'
 GROUP BY product;
 
---How many customers ordered more than 2 products at a time, and what was the average amount spent for those customers? 
+--How many customers ordered more than 2 products at a time, and what was the average amount spent for those customers (in February)? 
 SELECT COUNT(distinct customers.acctnum), AVG(quantity*price) FROM BIT_DB.FebSales
 LEFT JOIN BIT_DB.customers
 ON FebSales.orderid = customers.order_id 
 WHERE FebSales.Quantity > 2
 AND length(orderid) = 6
 AND orderid <> 'Order ID';
+
+
+--Show the order dates for those orders from between 2/13 and 2/18
+SELECT orderdate
+FROM BIT_DB.FebSales
+WHERE orderdate BETWEEN '02/13/19 00:00' AND '02/18/19 00:00';
+
+
+--Show the location of the order(s) that took place 2/18/19 at 1:35pm
+SELECT location
+FROM BIT_DB.FebSales
+WHERE orderdate = '02/18/19 01:35';
+
+--How many items were ordered on 2/18/19
+SELECT SUM(quantity)
+FROM BIT_DB.FebSales
+WHERE orderdate LIKE '02/18/19%';
+
+--Which (different)products include the word Batteries
+SELECT distinct Product
+FROM BIT_DB.FebSales
+WHERE Product LIKE '%Batteries%';
+
+--Show the (different)products and price of those ending in .99 
+SELECT distinct Product, PRICE
+FROM BIT_DB.FebSales
+WHERE Price LIKE '%.99';
+
+--List all the products sold in Los Angeles in February, and include how many of each were sold
+SELECT Product, SUM(Quantity) FROM BIT_DB.FebSales
+WHERE location LIKE '%Los Angeles%'
+GROUP BY Product;
