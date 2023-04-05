@@ -1,3 +1,5 @@
+--In this SQL, I created and queried a database with information about a clothing shop.
+
 --Create a database for a store
 
 CREATE TABLE clothing_shop (id INTEGER PRIMARY KEY, item TEXT, size TEXT, quantity INTEGER, price INTEGER);
