@@ -1,3 +1,5 @@
+--In this SQL, I created and queried a database with multiple tables about female artists.
+
 /* Create tables about female artists and information about them */
 
 CREATE TABLE female_singers 
