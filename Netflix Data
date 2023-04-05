@@ -1,4 +1,5 @@
 --In this SQL code, I am querying a data base holding Netflix data
+
 SELECT * FROM "CharlotteChaze/BreakIntoTech"."netflix_titles_info" LIMIT 5;
 
 --Use a join to join the data from the netflix_title_info table to the netflix_people table
