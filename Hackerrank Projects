@@ -123,31 +123,6 @@ Root: If the node is a root node.
 Leaf: If the node is a leaf node.
 Inner: If the node is neither root nor leaf node.
 
-Sample Input:
-N   P
-1   2
-3   2
-6   8
-9   8
-2   5
-8   5
-5   null
-
-Sample Output
-1 Leaf
-2 Inner
-3 Leaf
-5 Root
-6 Leaf
-8 Inner
-9 Leaf
-
-Explanation
-The Binary Tree below illustrates the sample
-     5
-  2     8
-1   3  6  9
-
 SELECT N,
 CASE 
 WHEN P IS NULL THEN 'Root'
@@ -156,6 +131,20 @@ ELSE 'Leaf'
 END AS node_type
 FROM BST
 ORDER BY N;
+
+--Amber's conglomerate corporation just acquired some new companies. Each of the companies follows this hierarchy: 
+Founder > Lead Manager > Senior Manager > Manager > Employee
+Given the table schemas below, write a query to print the compnay_code, founder name, total number of lead managers, total number of
+senior managers, total number of managers, and total number of employees. Order your output by ascending company_code.
+Note:
+The tables may contain duplicate records
+The compnay_code is a string, so the sorting should not be numeric
+
+SELECT Employee.company_code, Company.founder, COUNT(distinct Employee.lead_manager_code), COUNT(distinct Employee.senior_manager_code), COUNT(distinct Employee.manager_code), COUNT(distinct Employee.employee_code) FROM Employee
+INNER JOIN Company 
+ON Company.company_code = Employee.company_code
+GROUP BY Employee.company_code, Company.founder
+ORDER BY Employee.company_code;
 
 
 
