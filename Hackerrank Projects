@@ -97,6 +97,14 @@ SELECT
   END AS triangle_type
 FROM TRIANGLES;
 
+--Samantha was tasked with calculating the average monthly salaries for all employees in the EMPLOYEES table, but did not realize her keyboard's 0 key
+was broken until after completing the calculation. She wants your help finding the difference between her miscalculation (using salaries with any zeros removed),
+and the actual average salary.
+Write a query calculating the amount of error (i.e.: actual - miscalculated average monthly salaries), and round it up to the next integer.
+
+SELECT CEIL(AVG(salary) - AVG(replace(Salary, '0', ''))) FROM EMPLOYEES;
+
+
 --Intermediate:
 --Generate the following two result sets:
 1. Query an alphabetically ordered list of all names in OCCUPATIONS, immediately followed by the first letter of each profession as a paranthetical
@@ -147,13 +155,5 @@ INNER JOIN Company
 ON Company.company_code = Employee.company_code
 GROUP BY Employee.company_code, Company.founder
 ORDER BY Employee.company_code;
-
---Samantha was tasked with calculating the average monthly salaries for all employees in the EMPLOYEES table, but did not realize her keyboard's 0 key
-was broken until after completing the calculation. She wants your help finding the difference between her miscalculation (using salaries with any zeros removed),
-and the actual average salary.
-Write a query calculating the amount of error (i.e.: actual - miscalculated average monthly salaries), and round it up to the next integer.
-
-SELECT CEIL(AVG(salary) - AVG(replace(Salary, '0', ''))) FROM EMPLOYEES;
-
 
 
