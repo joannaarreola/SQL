@@ -1,5 +1,6 @@
---This is a series of SQL I've written to query different tables from Hackerrank practice problems.
+--This is a series of SQL I've written to query different tables from Hackerrank practice problems. The queries get more difficult as you scroll.
 
+--Basic:
 --Query all columns for all American cities in the CITY table with populations larger than 100000. The CountryCode for America is USA.
 
 SELECT * FROM CITY
@@ -79,6 +80,8 @@ WHERE salary > 2000
 AND months < 10
 ORDER BY employee_id ASC;
 
+
+--Intermediate:
 --Generate the following two result sets:
 1. Query an alphabetically ordered list of all names in OCCUPATIONS, immediately followed by the first letter of each profession as a paranthetical
 (i.e.: enclosed in parentheses). For example: AnActorName(A), ADoctorName(D), AProfessorName(P), and ASingerName(S).
@@ -94,6 +97,50 @@ UNION
 occupations
 GROUP BY Occupation)
 ORDER BY N ASC;
+
+--You are given a table, BST, containing two columns: N and P, where N represents the value of a node in Binary Tree, and P is the parent of N.
+Column Type
+N      Integer
+P      INteger
+
+Write a query to find the node type of Binary Tree ordered by the value of the node. Output one of the following for each node:
+Root: If the node is a root node.
+Leaf: If the node is a leaf node.
+Inner: If the node is neither root nor leaf node.
+
+Sample Input:
+N   P
+1   2
+3   2
+6   8
+9   8
+2   5
+8   5
+5   null
+
+Sample Output
+1 Leaf
+2 Inner
+3 Leaf
+5 Root
+6 Leaf
+8 Inner
+9 Leaf
+
+Explanation
+The Binary Tree below illustrates the sample
+     5
+  2     8
+1   3  6  9
+
+SELECT N,
+CASE 
+WHEN P IS NULL THEN 'Root'
+WHEN N in (SELECT DISTINCT P FROM BST) THEN 'Inner'
+ELSE 'Leaf'
+END AS node_type
+FROM BST
+ORDER BY N;
 
 
 
