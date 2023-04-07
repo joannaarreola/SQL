@@ -80,6 +80,21 @@ WHERE salary > 2000
 AND months < 10
 ORDER BY employee_id ASC;
 
+Write a query identifying the type of each record in the TRIANGLES table using its three side lengths.
+Output one of the following statements for each record in the table:
+Equilateral: It's a traingle with 3 sides of equal length
+Isosceles: It's a traingle with 2 sides of equal length
+Scalene: It's a traingle with 3 sides of differing lengths
+Not a triangle: The given values of A, B, and C don't form a triangle
+
+SELECT
+  CASE 
+    WHEN A + B <= C or A + C <= B or B + C <= A THEN 'Not A Triangle'
+    WHEN A = B and B = C THEN 'Equilateral'
+    WHEN A = B or A = C or B = C THEN 'Isosceles'
+    WHEN A <> B and B <> C THEN 'Scalene'
+  END AS triangle_type
+FROM TRIANGLES;
 
 --Intermediate:
 --Generate the following two result sets:
