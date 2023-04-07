@@ -104,6 +104,16 @@ Write a query calculating the amount of error (i.e.: actual - miscalculated aver
 
 SELECT CEIL(AVG(salary) - AVG(replace(Salary, '0', ''))) FROM EMPLOYEES;
 
+--We define an employee's total earnings to be their monthly salay x months worked, and the maximum total earnings to be the maximum total earnings by an employee in the 
+Employee table. Write a query to find the maximum total earnings for all employees as well as the total number of employees who have maximum total earnings. Then print
+these 2 values as 2 space-separated integers.
+
+SELECT MAX(months * salary), COUNT(*) FROM Employee
+GROUP BY (months * salary)
+ORDER BY (months * salary) DESC
+LIMIT 1;
+
+
 
 --Intermediate:
 --Generate the following two result sets:
