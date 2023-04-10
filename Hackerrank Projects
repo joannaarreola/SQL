@@ -113,6 +113,23 @@ GROUP BY (months * salary)
 ORDER BY (months * salary) DESC
 LIMIT 1;
 
+--Given the CITY and COUNTRY tables, query the sum of the populations of all cities where CONTINENT is "Asia"
+
+SELECT SUM(CITY.POPULATION) FROM CITY
+INNER JOIN COUNTRY 
+ON CITY.COUNTRYCODE = COUNTRY.CODE
+WHERE COUNTRY.CONTINENT = "Asia";
+
+--Given the CITY and COUNTRY tables, query the names of all the continents(COUNTRY.Continent) and their respective average 
+city populations(CITY.Population) rounded down to the nearest integer.
+
+SELECT COUNTRY.CONTINENT, FLOOR(AVG(CITY.POPULATION)) FROM CITY
+INNER JOIN COUNTRY 
+ON CITY.COUNTRYCODE = COUNTRY.CODE
+GROUP BY COUNTRY.CONTINENT;
+
+
+
 
 
 --Intermediate:
@@ -157,7 +174,7 @@ Given the table schemas below, write a query to print the compnay_code, founder 
 senior managers, total number of managers, and total number of employees. Order your output by ascending company_code.
 Note:
 The tables may contain duplicate records
-The compnay_code is a string, so the sorting should not be numeric
+The company_code is a string, so the sorting should not be numeric
 
 SELECT Employee.company_code, Company.founder, COUNT(distinct Employee.lead_manager_code), COUNT(distinct Employee.senior_manager_code), 
 COUNT(distinct Employee.manager_code), COUNT(distinct Employee.employee_code) FROM Employee
@@ -165,5 +182,44 @@ INNER JOIN Company
 ON Company.company_code = Employee.company_code
 GROUP BY Employee.company_code, Company.founder
 ORDER BY Employee.company_code;
+
+--Consider P1(a,b) and P2(c,d) to be two points on a 2D plane.
+a happens to be equal to the minimum value in Northern Latitude (LAT_N in STATION)
+b happens to be equal to the minimum value in Northern Latitude (LONG_W in STATION)
+c happens to be equal to the maximum value in Northern Latitude (LAT_N in STATION)
+d happens to be equal to the maximum value in Northern Latitude (LONG_W in STATION)
+Query the Manhattan Distance etween points P1 and P2 and roun it to a scale of decimal places
+
+SELECT ROUND(((abs(MIN(LAT_N)-MAX(LAT_N)))+(abs(MIN(LONG_W)-MAX(LONG_W)))), 4) FROM STATION;
+
+--Consider P1(a,c) and P2(b,d) to be two points on a 2D plane where (a,b) are the respective minimum and
+maximum values of Northern Latitude(LAT_N) and (c,d) are the respective minimum and maximum values of Western 
+Longitude (LONG_W) in STATION.
+Query the Euclidean Distance between points P1 and P2 and format you answer to display 4 decimal digits.
+
+SELECT ROUND(SQRT(POWER(MIN(LAT_N)-MAX(LAT_N),2)+POWER(MIN(LONG_W)-MAX(LONG_W),2)),4) FROM STATION;
+
+You are given two tables: Students and Grades. Students contains three columns ID, Name, and Marks.
+Grades contains Grade, Min_Mark and Max_mark.
+Ketty gives Eve a task to generate a report containing three columns: Name, Grade and Mark. 
+Ketty doesn't want the NAMES of those students who received a grade lower than 8. 
+The report must be in descending order by grade -- i.e. higher grades are entered first. 
+If there is more than one student with the same grade (8-10) assigned to them, order those particular 
+students by their name alphabetically. Finally, if the grade is lower than 8, use "NULL" as their name 
+and list them by their grades in descending order. If there is more than one student with the same grade (1-7) assigned to them, 
+order those particular students by their marks in ascending order.
+Write a query to help Eve.
+
+SELECT 
+CASE 
+WHEN Grades.Grade < 8 THEN NULL 
+ELSE Students.Name
+END as Name,
+Grades.Grade, Students.Marks FROM Students  
+INNER JOIN Grades 
+ON Students.Marks BETWEEN Grades.Min_Mark AND Grades.Max_Mark
+ORDER BY Grades.Grade DESC, Students.Name;
+
+
 
 
