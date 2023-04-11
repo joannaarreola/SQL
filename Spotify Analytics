@@ -1,0 +1,41 @@
+--For this project, I downloaded a Spotify dataset from Kaggle, created a table to insert Spotify data into and performed SQL queries on the data.
+
+--Created the table: 
+CREATE TABLE BIT_DB.Spotifydata (
+id integer PRIMARY KEY,
+artist_name varchar NOT NULL,
+track_name varchar NOT NULL,
+track_id varchar NOT NULL,
+popularity integer NOT NULL,
+danceability decimal(4,3) NOT NULL,
+energy decimal(4,3) NOT NULL,
+key integer NOT NULL,
+loudness decimal(5,3) NOT NULL,
+mode integer NOT NULL,
+speechiness decimal(5,4) NOT NULL,
+acousticness decimal(6,5) NOT NULL,
+instrumentalness text NOT NULL,
+liveness decimal(5,4) NOT NULL,
+valence decimal(4,3) NOT NULL,
+tempo decimal(6,3) NOT NULL,
+duration_ms integer NOT NULL,
+time_signature integer NOT NULL 
+)
+
+--Inserted Spotify Data .csv into the table.
+
+--Explored the data using the following SQL:
+
+--What artists had more than 1 song on the top 50 chart, and how many songs did they each have?
+
+SELECT artist_name, COUNT(artist_name) FROM BIT_DB.Spotifydata
+GROUP BY artist_name
+HAVING COUNT(artist_name) > 1;
+
+
+--Which songs on the top 50 were the 5 longest songs and how long were they?
+
+SELECT track_name, duration_ms FROM BIT_DB.Spotifydata
+ORDER BY duration_ms DESC
+LIMIT 5;
+
