@@ -199,7 +199,7 @@ Query the Euclidean Distance between points P1 and P2 and format you answer to d
 
 SELECT ROUND(SQRT(POWER(MIN(LAT_N)-MAX(LAT_N),2)+POWER(MIN(LONG_W)-MAX(LONG_W),2)),4) FROM STATION;
 
-You are given two tables: Students and Grades. Students contains three columns ID, Name, and Marks.
+--You are given two tables: Students and Grades. Students contains three columns ID, Name, and Marks.
 Grades contains Grade, Min_Mark and Max_mark.
 Ketty gives Eve a task to generate a report containing three columns: Name, Grade and Mark. 
 Ketty doesn't want the NAMES of those students who received a grade lower than 8. 
@@ -220,6 +220,22 @@ INNER JOIN Grades
 ON Students.Marks BETWEEN Grades.Min_Mark AND Grades.Max_Mark
 ORDER BY Grades.Grade DESC, Students.Name;
 
+--Julia just finished conducting a coding contest, and she needs your help assembling the leaderboard! Write a query to print the respective hacker_id and name 
+of hackers who achieved full scores for more than one challenge. Order your output in descending order by the total number of challenges in which the hacker earned a full score.
+If more than one hacker received full scores in the same number of challenges, then sort them by ascending hacker_id.
+
+SELECT Hackers.hacker_id, Hackers.name FROM Submissions
+INNER JOIN Hackers 
+ON Hackers.hacker_id = Submissions.hacker_id
+INNER JOIN Challenges
+ON Challenges.challenge_id = Submissions.challenge_id
+INNER JOIN Difficulty
+ON Difficulty.difficulty_level = Challenges.difficulty_level
+WHERE Difficulty.score = Submissions.score
+AND Difficulty.difficulty_level = Challenges.difficulty_level
+GROUP BY Hackers.hacker_id,Hackers.name
+HAVING COUNT(Submissions.submission_id) > 1
+ORDER BY COUNT(Submissions.submission_id) DESC, Hackers.hacker_id;
 
 
 
