@@ -39,3 +39,25 @@ SELECT track_name, duration_ms FROM BIT_DB.Spotifydata
 ORDER BY duration_ms DESC
 LIMIT 5;
 
+--Select the top 10 songs and their respective artists in terms of popularity. Sort by popularity.
+SELECT artist_name, track_name FROM BIT_DB.Spotifydata
+ORDER BY popularity DESC
+LIMIT 10;
+
+--What was the average danceability by artist
+SELECT artist_name, ROUND(AVG(danceability),3) FROM BIT_DB.Spotifydata
+GROUP BY artist_name;
+
+--Calculate the average popularity for the artists in the Spotify data table. Then, for every artist with an average popularity of 90 or above,
+show their name, their average popularity, and label them as a "Top Star"
+
+WITH avg_pop_CTE AS (
+SELECT s.artist_name, AVG(s.popularity) as avgpop
+FROM Spotifydata s
+GROUP BY s.artist_name
+)
+
+SELECT artist_name, avgpop, 'Top Star' AS tag
+FROM avg_pop_CTE
+WHERE avgpop >= 90;
+
