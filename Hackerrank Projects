@@ -237,5 +237,18 @@ GROUP BY Hackers.hacker_id,Hackers.name
 HAVING COUNT(Submissions.submission_id) > 1
 ORDER BY COUNT(Submissions.submission_id) DESC, Hackers.hacker_id;
 
+--The total score of a hacker is the sum of their maximum scores for all the challenges. Write a query to print the hacker_id, name, and total score 
+of the hackers ordered by descending score. If more than one hacker achieved the same total score, then sort the result by ascending hacker_id. 
+Exclude all hackers with a total score of 0 from your result.
+
+SELECT t.hacker_id, h.name, SUM(tscore) as totalscore FROM
+(SELECT hacker_id, challenge_id, MAX(score) as tscore FROM Submissions 
+GROUP BY hacker_id, challenge_id) as t
+INNER JOIN Hackers as h
+on t.hacker_id = h.hacker_id
+GROUP BY t.hacker_id, h.name
+HAVING totalscore > 0
+ORDER BY totalscore DESC, t.hacker_id;
+
 
 
