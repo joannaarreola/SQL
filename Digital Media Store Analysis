@@ -55,14 +55,48 @@ WHERE InvoiceDate LIKE '%2009%';
 
 --Write a query that includes the purchased track name with each invoice line ID.
 
-SELECT t.Name, i.InvoiceId FROM chinook.invoice_items i
+SELECT t.Name, i.Invoicelineid FROM chinook.invoice_items i
 INNER JOIN chinook.tracks t on
 i.Trackid = t.Trackid;
 
 --Write a query that includes the purchased track name AND artist name with each invoice line ID.
 
+SELECT s.Name, t.Name, i.Invoicelineid FROM chinook.invoice_items i
+INNER JOIN chinook.tracks t
+on i.TrackId = t.TrackId
+INNER JOIN chinook.albums a
+on a.AlbumId = t.AlbumId
+INNER JOIN chinook.artists s
+on s.ArtistId = a.ArtistId
+
 --Provide a query that shows all the Tracks, and include the Album name, Media type, and Genre.
+
+SELECT t.Name as track, a.Title as album, m.Name as mediatype, g.Name as geenre 
+FROM chinook.tracks t
+INNER JOIN chinook.albums a
+on t.AlbumId = a.AlbumId
+INNER JOIN chinook.media_types m
+on t.MediaTypeId = m.MediaTypeId
+INNER JOIN chinook.genres g
+on t.GenreId = g.GenreId
 
 --Show the total sales made by each sales agent.
 
+select ROUND(SUM(i.Total), 2) as totalsales, e.FirstName, E.LastName from chinook.invoices i
+INNER JOIN chinook.customers c
+on i.Customerid = c.Customerid
+INNER JOIN chinook.employees e
+on c.SupportRepid = e.Employeeid
+GROUP BY e.FirstName;
+
 --Which sales agent made the most dollars in sales in 2009?
+
+select ROUND(SUM(i.Total), 2) as totalsales, e.FirstName, E.LastName from chinook.invoices i
+INNER JOIN chinook.customers c
+on i.Customerid = c.Customerid
+INNER JOIN chinook.employees e
+on c.SupportRepid = e.Employeeid
+WHERE InvoiceDate LIKE '%2009%'
+GROUP BY e.FirstName
+ORDER BY totalsales DESC
+LIMIT 1;
