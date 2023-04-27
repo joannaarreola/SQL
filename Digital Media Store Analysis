@@ -100,3 +100,13 @@ WHERE InvoiceDate LIKE '%2009%'
 GROUP BY e.FirstName
 ORDER BY totalsales DESC
 LIMIT 1;
+
+--Display each sales agent's average total per invoice next to a list of all their sales.
+
+select e.FirstName, e.LastName, i.Total, 
+AVG(Total) OVER (PARTITION BY e.FirstName) as Average_sale
+from chinook.invoices i
+INNER JOIN chinook.customers c
+on i.Customerid = c.Customerid
+INNER JOIN chinook.employees e
+on c.SupportRepid = e.Employeeid;
