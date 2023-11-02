@@ -26,30 +26,40 @@ time_signature integer NOT NULL
 
 --Explored the data using the following SQL:
 
---What artists had more than 1 song on the top 50 chart, and how many songs did they each have?
+--Question: What artists had more than 1 song on the top 50 chart, and how many songs did they each have?
+--Approach: We want to select the artist_name column from the table so we use that in the select statement. We use the count function in order to gather the totals per artist. We use
+group by since we used the aggregate count function. Lastly we filter the results with the having clause.
 
 SELECT artist_name, COUNT(artist_name) FROM BIT_DB.Spotifydata
 GROUP BY artist_name
 HAVING COUNT(artist_name) > 1;
 
 
---Which songs on the top 50 were the 5 longest songs and how long were they?
+--Question: Which songs on the top 50 were the 5 longest songs and how long were they?
+--Approach: We need the song names and durations to answer this question so we use these columns in our select statement. To gather the top 5 we order the results from longest to 
+shortest and limit to 5 results.
 
 SELECT track_name, duration_ms FROM BIT_DB.Spotifydata
 ORDER BY duration_ms DESC
 LIMIT 5;
 
---Select the top 10 songs and their respective artists in terms of popularity. Sort by popularity.
+--Question: Select the top 10 songs and their respective artists in terms of popularity.
+--Approach: We want to show the song name and artist so we use these in our select statement. We then, sort the results by popularity and limit the answer to 10.
+
 SELECT artist_name, track_name FROM BIT_DB.Spotifydata
 ORDER BY popularity DESC
 LIMIT 10;
 
---What was the average danceability by artist
+--Question: What was the average danceability by artist
+--Approach: We use the average function to get the average danceability and use the round function to get a more usable result. We group by artist since avg is an aggregate function.
+
 SELECT artist_name, ROUND(AVG(danceability),3) FROM BIT_DB.Spotifydata
 GROUP BY artist_name;
 
---Calculate the average popularity for the artists in the Spotify data table. Then, for every artist with an average popularity of 90 or above,
+--Question: Calculate the average popularity for the artists in the Spotify data table. Then, for every artist with an average popularity of 90 or above,
 show their name, their average popularity, and label them as a "Top Star"
+--Approach: We use a cte to create a temporary table with the avergae popularity by artist. We then reference that temporary table to retrieve the artists with popularity 90 or above 
+using a where clause.
 
 WITH avg_pop_CTE AS (
 SELECT s.artist_name, AVG(s.popularity) as avgpop
