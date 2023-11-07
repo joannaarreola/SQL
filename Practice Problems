@@ -1,0 +1,18 @@
+This file contains a variety of practice problems from different websites. I found these the most helpful in my SQL learning journey as they gave me exposure to a variety of question
+types/problems I could encounter as well as new SQL syntax I hadn't used before. I revisit these practice problems to brush up on my SQL skills. The difficult of the problems is specified in headings.
+
+HackerRank
+Easy
+Question: Query all columns for all American cities in the CITY table with populations larger than 100000. The CountryCode for America is USA.
+Approach: We need to form a select statement with * to select all columns, gather the data from the city table, and filter using a where clause. There are two conditions, so include these both using the and operator.
+
+select * from city
+where population > 100000
+and countrycode = 'USA'
+
+Question: Query the NAME field for all American cities in the CITY table with populations larger than 120000. The CountryCode for America is USA.
+Approach: We need to form a select statement and select the name column, gather the data from the city table, and filter using a where clause. There are two conditions, so include these both using the and operator.
+
+select name from city
+where population > 120000
+and countrycode = 'USA'
