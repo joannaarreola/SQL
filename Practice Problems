@@ -16,3 +16,59 @@ Approach: We need to form a select statement and select the name column, gather 
 select name from city
 where population > 120000
 and countrycode = 'USA'
+
+Question: Query all columns (attributes) for every row in the CITY table
+Approach: This is a straight forward select statement. We use * to select all the columns from the city table.
+
+select * from city
+
+Question: Query all columns for a city in CITY with the ID 1661.
+Approach: We use a select statement with * to include all the columns. We filter using a where clause to the specified numerical value.
+
+select * from city
+where ID = 1661
+
+Question: Query all attributes of every Japanese city in the CITY table. The COUNTRYCODE for Japan is JPN.
+Approach: We use a select statement with * to include all the columns. We filter using a where clause to the specified countrycode.
+
+select * from city
+where countrycode = 'JPN'
+
+Question: Query the names of all the Japanese cities in the CITY table. The COUNTRYCODE for Japan is JPN.
+Approach: We can use the same answer from the previous question and modify it to select only the name column rather than all.
+
+select name from city
+where countrycode = 'JPN'
+
+Question: Query a list of CITY and STATE from the STATION table.
+Approach: This is a straight forward select statement. We select the city and state columns from the station table.
+
+select city, state from station
+
+Question: Query a list of CITY names from STATION for cities that have an even ID number. Print the results in any order, but exclude duplicates from the answer.
+Approach: In order to exclude duplicates we use the distinct function. We select the city column from the station table. In order to get even number ids only we can use the modulo operator. The id number divided by 2 should give remainder 0.
+
+select distinct city from station
+where mod(id, 2) = 0
+
+Question: Find the difference between the total number of CITY entries in the table and the number of distinct CITY entries in the table.
+Approach: We select a count of the city names and subtract from a count of distinct city names from the station table.
+
+select count(city) - count(distinct city) from station
+
+Question: Query the two cities in STATION with the shortest and longest CITY names, as well as their respective lengths (i.e.: number of characters in the name). If there is more than one smallest or largest city, choose the one that comes first when ordered alphabetically.
+Approach: We select city name from the station table and use the length function to get the number of letters in the city name. We order the results by length descending to get the longest name and also order by city to sort alphabetically. Limit to the top answer. We use a union to display the shortest city as well. We use the same select statement and change to ascending length.
+
+(select city, length(city) from station
+order by length(city) desc, city
+limit 1)
+union
+(select city, length(city) from station
+order by length(city) asc, city
+limit 1)
+
+
+
+
+
+
