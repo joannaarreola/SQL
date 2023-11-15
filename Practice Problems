@@ -67,6 +67,18 @@ union
 order by length(city) asc, city
 limit 1)
 
+Question: Query the list of CITY names starting with vowels (i.e., a, e, i, o, or u) from STATION. Your result cannot contain duplicates.
+Approach: We use a distinct clause in order to avoid duplicates. We can match any of the characters in the brackets at the beginning of the string using an rlike expression, ^, and [].
+
+select distinct city from station
+where city RLIKE '^[AEIOU]'
+
+Question: Query the list of CITY names ending with vowels (a, e, i, o, u) from STATION. Your result cannot contain duplicates.
+Approach: We use a distinct clause in order to avoid duplicates. We can match any of the characters in the brackets at the end of the string using an rlike expression, $, and [].
+
+select distinct city from station
+where city RLIKE '[aeiou]$'
+
 
 
 
