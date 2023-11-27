@@ -79,7 +79,35 @@ Approach: We use a distinct clause in order to avoid duplicates. We can match an
 select distinct city from station
 where city RLIKE '[aeiou]$'
 
+Question: Query the list of CITY names from STATION which have vowels (i.e., a, e, i, o, and u) as both their first and last characters. Your result cannot contain duplicates.
+Approach: We can combine some of the previous select statements from previous questions with an and operator in order to satisfy both conditions.
 
+select distinct city from station
+where city rlike '^[AEIOU]' and city rlike '[aeiou]$'
+
+Question: Query the list of CITY names from STATION that do not start with vowels. Your result cannot contain duplicates.
+Approach: We can use the previous select statement searching for results containing vowels in the first letter and add not to the rlike operator in order to search for the opposite.
+
+select distinct city from station
+where city not RLIKE '^[AEIOU]'
+
+Question: Query the list of CITY names from STATION that do not end with vowels. Your result cannot contain duplicates.
+Approach: We can use the previous select statement searching for results containing vowels in the last letter and add not to the rlike operator in order to search for the opposite.
+
+select distinct city from station
+where city not RLIKE '[aeiou]$'
+
+Question: Query the list of CITY names from STATION that either do not start with vowels or do not end with vowels. Your result cannot contain duplicates.
+Approach: We can use the previous select statement searching for results containing vowels in the first and last letter and add not to the rlike operator in order to search for the opposite. We also edit the epression to or instead of and to serach for either.
+
+select distinct city from station
+where city not rlike '^[AEIOU]' or city not rlike '[aeiou]$'
+
+Question: Query the list of CITY names from STATION that do not start with vowels and do not end with vowels. Your result cannot contain duplicates.
+Approach: We can use the previous select statement searching for results containing vowels in the first and last letter and add not to the rlike operator in order to search for the opposite.
+
+select distinct city from station
+where city not rlike '^[AEIOU]' and city not rlike '[aeiou]$'
 
 
 
