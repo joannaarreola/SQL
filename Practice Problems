@@ -109,6 +109,41 @@ Approach: We can use the previous select statement searching for results contain
 select distinct city from station
 where city not rlike '^[AEIOU]' and city not rlike '[aeiou]$'
 
+Question: Query the Name of any student in STUDENTS who scored higher than 75 Marks. Order your output by the last three characters of each name. If two or more students both have names ending in the same last three characters (i.e.: Bobby, Robby, etc.), secondary sort them by ascending ID.
+Approach: We select the column name from the table students. We filter to marks greater than 75. To order by the last 3 characters of the names we use the substring function specifying the name column, the third to last position of the string, and 3 characters from this position i the string. We then order by ascending id.
 
+select name from students
+where marks > 75
+order by substring(name, -3, 3), id asc
+
+Question: Write a query that prints a list of employee names (i.e.: the name attribute) from the Employee table in alphabetical order.
+Approach: We select the name column from the employee table. We then order by name to put the names in alphabetical order.
+
+select name from employee
+order by name
+
+Question: Write a query that prints a list of employee names (i.e.: the name attribute) for employees in Employee having a salary greater than $2000 per month who have been employees for less than 10 months. Sort your result by ascending employee_id.
+Approach: We select the name column from the employee table. We filter to salary over 2000 and months less than 10. We lastly order by ascending employee id.
+
+select name from employee
+where salary > 2000
+and months < 10
+order by employee_id asc
+
+Question: Write a query identifying the type of each record in the TRIANGLES table using its three side lengths. Output one of the following statements for each record in the table:
+Equilateral: It's a triangle with 3 sides of equal length.
+Isosceles: It's a triangle with 2 sides of equal length.
+Scalene: It's a triangle with 3 sides of differing lengths.
+Not A Triangle: The given values of A, B, and C don't form a triangle.
+Approach: We use a case statement in order to create a new column and print the desired text. The case statement conditions are evaluated in order so we should first determine if the sides even make up a triangle. From there we can test if all sides are equal, then if two sides are equal, or if none are equal.
+
+SELECT
+  CASE 
+    WHEN A + B <= C or A + C <= B or B + C <= A THEN 'Not A Triangle'
+    WHEN A = B and B = C THEN 'Equilateral'
+    WHEN A = B or A = C or B = C THEN 'Isosceles'
+    WHEN A <> B and B <> C THEN 'Scalene'
+  END AS triangle_type
+FROM TRIANGLES;
 
 
