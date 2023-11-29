@@ -146,4 +146,28 @@ SELECT
   END AS triangle_type
 FROM TRIANGLES;
 
+Question: Query a count of the number of cities in CITY having a Population larger than 100,000
+Approach: We use the count(*) function to count the total number of results. We then filter the population number using a where clause.
+
+select count(*) from city
+where population > 100000
+
+Question: Query the total population of all cities in CITY where District is California.
+Approach: We use the count function and specify the population column in order to get the aggregate population. We filter the district to California using a where clause.
+
+select sum(population) from city
+where district = 'California'
+
+Question: Query the average population of all cities in CITY where District is California.
+Approach: We can use the select statement from the previous question and change the sum function to the avergae function instead.
+
+select avg(population) from city
+where district = 'California'
+
+Question: Query the average population for all cities in CITY, rounded down to the nearest integer.
+Approach: We use the average function to get the average population from the city table. We use the floor funtion on the average function to round down to the nearest integer.
+
+select floor(avg(population)) from city
+
+
 
