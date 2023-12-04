@@ -1,5 +1,5 @@
 This file contains a variety of practice problems from different websites. I found these the most helpful in my SQL learning journey as they gave me exposure to a variety of question
-types/problems I could encounter as well as new SQL syntax I hadn't used before. I revisit these practice problems to brush up on my SQL skills. The difficult of the problems is specified in headings.
+types/problems I could encounter as well as new SQL syntax I hadn't used before. I revisit these practice problems to brush up on my SQL skills. The difficulty of the problems is specified in headings.
 
 HackerRank
 Easy
@@ -169,5 +169,26 @@ Approach: We use the average function to get the average population from the cit
 
 select floor(avg(population)) from city
 
+Questiion: Query the sum of the populations for all Japanese cities in CITY. The COUNTRYCODE for Japan is JPN
+Approach: We use the sum function and specify the population column in order to get the aggregate population. We filter the countrycode to Japan using a where clause.
 
+select sum(population) from city
+where countrycode = 'JPN'
 
+Question: Query the difference between the maximum and minimum populations in CITY.
+Approach: We use the max and min functions ad specify the population column. We subtract these from each other to obtain our result.
+
+select max(population) - min(population) from city
+
+Question: Samantha was tasked with calculating the average monthly salaries for all employees in the EMPLOYEES table, but did not realize her keyboard's  key was broken until after completing the calculation. She wants your help finding the difference between her miscalculation (using salaries with any zeros removed), and the actual average salary. Write a query calculating the amount of error (i.e.:  average monthly salaries), and round it up to the next integer.
+Approach: We start by using av(salary) to get the actual result. In order to achieve the result of the miscalculation we need to replace every instance of 0 with an empty value. We do this by using the replace function. We then subract these two results (actual and miscalculation) and use the ceil function to round up.
+
+select ceil(avg(salary) - avg(replace(salary, 0, ''))) from employees
+
+Question: We define an employee's total earnings to be their monthly salary * months worked, and the maximum total earnings to be the maximum total earnings for any employee in the Employee table. Write a query to find the maximum total earnings for all employees as well as the total number of employees who have maximum total earnings. Then print these values as 2 space-separated integers.
+Approach:
+
+SELECT MAX(months * salary), COUNT(*) FROM Employee
+GROUP BY (months * salary)
+ORDER BY (months * salary) DESC
+LIMIT 1;
