@@ -186,9 +186,8 @@ Approach: We start by using av(salary) to get the actual result. In order to ach
 select ceil(avg(salary) - avg(replace(salary, 0, ''))) from employees
 
 Question: We define an employee's total earnings to be their monthly salary * months worked, and the maximum total earnings to be the maximum total earnings for any employee in the Employee table. Write a query to find the maximum total earnings for all employees as well as the total number of employees who have maximum total earnings. Then print these values as 2 space-separated integers.
-Approach: We use months*salary in our select statemnt as use the alias total_earnings to rename the column. We use a count(*) to determine how many people have the specified result. To limit to the top earnings, we need to group by total_earnings, order by total_earnings descending and limit the result to 1
+Approach: We use the max function of months*salary to get the maximum value of total earnings. We use a count(*) function to determine the total number of employees with the max total_earnings as their total earnings. We use a subquery in order to specify the value we want the count to retrieve.
 
-SELECT months*salary as total_earnings, COUNT(*) FROM Employee
-GROUP BY total_earnings
-ORDER BY total_earnings DESC
-LIMIT 1;
+SELECT MAX(months * salary), COUNT(*) 
+FROM employee
+WHERE months * salary = (SELECT MAX(months * salary) FROM employee)
