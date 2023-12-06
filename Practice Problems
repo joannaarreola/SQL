@@ -236,3 +236,27 @@ select round(long_w, 4) from station
 where lat_n > 38.7780
 order by lat_n asc
 limit 1
+
+Question: Given the CITY and COUNTRY tables, query the sum of the populations of all cities where the CONTINENT is 'Asia'.
+Approach: We need to join the city and country tables in order to use data from both tables. We select the sum of population specifying it is from the city table. We use an inner join in order to match values in both the city and country tables. We join on their common column country code. Lastly, we filter the results using a where clause and set the continent to Asia.
+
+select sum(city.population) from city
+inner join country on city.countrycode = country.code
+where country.continent = 'Asia'
+
+Question: Given the CITY and COUNTRY tables, query the names of all cities where the CONTINENT is 'Africa'.
+Approach: We need to join the city and country tables in order to use data from both tables. We select the name column specifying it is from the city table. We use an inner join in order to match values in both the city and country tables. We join on their common column country code. Lastly, we filter the results using a where clause and set the continent to Africa.
+
+select city.name from city
+inner join country on city.countrycode = country.code
+where country.continent = 'Africa'
+
+Question: Given the CITY and COUNTRY tables, query the names of all the continents (COUNTRY.Continent) and their respective average city populations (CITY.Population) rounded down to the nearest integer.
+Approach: We need to join the city and country tables in order to use data from both tables. We select the contient column specifying it is from the country table. We also select the average population specifying it is from the city table and use the floor function on this result in order to round down to the nearest integer. We use an inner join in order to match values in both the city and country tables. We join on their common column country code. Lastly, we group by country.continent to specify the average aggregations.
+
+select country.continent, floor(avg(city.population)) from city
+inner join country on city.countrycode = country.code
+group by country.continent
+
+
+
