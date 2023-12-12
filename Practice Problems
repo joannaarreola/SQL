@@ -258,5 +258,37 @@ select country.continent, floor(avg(city.population)) from city
 inner join country on city.countrycode = country.code
 group by country.continent
 
+Medium
+Question: Generate the following two result sets:
+
+Query an alphabetically ordered list of all names in OCCUPATIONS, immediately followed by the first letter of each profession as a parenthetical (i.e.: enclosed in parentheses). For example: AnActorName(A), ADoctorName(D), AProfessorName(P), and ASingerName(S).
+Query the number of ocurrences of each occupation in OCCUPATIONS. Sort the occurrences in ascending order, and output them in the following format:
+
+There are a total of [occupation_count] [occupation]s.
+where [occupation_count] is the number of occurrences of an occupation in OCCUPATIONS and [occupation] is the lowercase occupation name. If more than one Occupation has the same [occupation_count], they should be ordered alphabetically.
+Approach: For the first result set, we use the concatenate function to print out the name, parenthesis, and use the substring function to extract the first letter in the occupation column. We use an alias N for this concatenated string in order to sort later since using a union will order the entire result set when an order by function is used. We use a union and move on the the next result set. For this result we again use the concatenated function to print out the given string, then a count of each occupation, a space, the occupation in lowercase, and an s. We also use the alias N for sorting purposes. We group by occupation since we used the count function. Lastly, we sort the entire union by N asc. This will sort the first part alphabetically and the second part numerically ascending.
+
+(select concat(name, '(', substr(Occupation,1,1), ')') as N from occupations)
+union
+(select concat('There are a total of ', count(occupation), ' ', lower(occupation), 's.') as N from occupations
+group by occupation)
+
+order by N asc
+
+Question: Amber's conglomerate corporation just acquired some new companies. Each of the companies follows this hierarchy: Founder > Lead Manager > Senior Manager > Manager > Employee. Given the table schemas below, write a query to print the company_code, founder name, total number of lead managers, total number of senior managers, total number of managers, and total number of employees. Order your output by ascending company_code.
+Approach: After browsing the table schemas we notice that The employee and company tables include all the data we need. The rest of the tables contain redundant information. We select company_code from the employee table, founder name from the company table, a count of the distinct lead manager codes from the employee table, a count of the distinct senior manager codes from the employee table, a count of the distinct manager codes from the employee table, and a count of the distinct employee codes from the employee table. We inner join on company_code to join the employee and company tables using the aliases e and c respectively. We gorup by company code and founder since these are out non-aggregates. Lastly, we order by ascending company code.
+
+select 
+e.company_code, 
+c.founder, 
+count(distinct e.lead_manager_code), 
+count(distinct e.senior_manager_code), 
+count(distinct e.manager_code), 
+count(distinct e.employee_code) 
+from employee e
+inner join company c 
+on e.company_code = c.company_code
+group by e.company_code, c.founder
+order by e.company_code asc
 
 
