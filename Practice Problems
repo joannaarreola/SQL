@@ -291,4 +291,53 @@ on e.company_code = c.company_code
 group by e.company_code, c.founder
 order by e.company_code asc
 
+Question: You are given a table, BST, containing two columns: N and P, where N represents the value of a node in Binary Tree, and P is the parent of N. Write a query to find the node type of Binary Tree ordered by the value of the node. Output one of the following for each node:
+Root: If node is root node.
+Leaf: If node is leaf node.
+Inner: If node is neither root nor leaf node.
+Approach: In order to satisfy the desired output, we will need the value of n, whether the node is a root, leaf or inner, ordered by n. To do this we first select n. Then we construct a case statement. We can start with the simplest condition which is for a root node. If the value of P is null (no parent node), the node is a root. Next, if the node is an inner node the value of n will also be inside p because the node can also be a parent node. All other values of n will be considered leaves.
+
+select n,
+case 
+when p is null then 'Root'
+when n in(select p from bst) then 'Inner'
+else 'Leaf'
+end as 'type of node'
+from bst
+order by n
+
+Question: Consider P1 and P2 to be two points on a 2D plane.
+ a happens to equal the minimum value in Northern Latitude (LAT_N in STATION).
+ b happens to equal the minimum value in Western Longitude (LONG_W in STATION).
+ c happens to equal the maximum value in Northern Latitude (LAT_N in STATION).
+ d happens to equal the maximum value in Western Longitude (LONG_W in STATION).
+Query the Manhattan Distance between points P1 and P2 and round it to a scale of 4 decimal places.
+Approach: The formula for Manhattan Distance is |x1 - x2| + |y1 - y2|. We can replace these values with our given ones to get |a - c| + |b - d|. We then plug in the values to get |min(lat_n) - max(lat_n)| + |min(long_w) - max(long_w)|. In order to input to sql we use the abs() function. Lastly we use the round function to round to 4 decimal places.
+
+select round((abs(min(lat_n)-max(lat_n)) + abs(min(long_w)-max(long_w))),4) from station
+
+Question:
+Consider p1(a,c) and p2(b,d) to be two points on a 2D plane where (a,b) are the respective minimum and maximum values of Northern Latitude (LAT_N) and (b,d) are the respective minimum and maximum values of Western Longitude (LONG_W) in STATION. Query the Euclidean Distance between points p1 and p2 and format your answer to display 4 decimal digits.
+Approach: The formula for Euclidean Distance is sqrt((q1-p1)^2 + (q2-p2)^2). We can replace these values with our given ones to get sqrt((b-a)^2 + (d-c)^2). We then plug in the values to get sqrt((max lat_n-min lat_n)^2 + (max long_w-min long_w)^2). In order to input to sql we use the power() and sqrt() functions. Lastly we use the round function to round to 4 decimal places.
+
+select round((sqrt(
+power((max(lat_n) - min(lat_n)), 2) +
+power((max(long_w) - min(long_w)),2)
+    )), 4)
+from station
+
+Question: A median is defined as a number separating the higher half of a data set from the lower half. Query the median of the Northern Latitudes (LAT_N) from STATION and round your answer to 4 decimal places.
+Approach: We first need to order the lat_n values. To do this, we can use a cte which we will name in_order. Within this cte, we select the let_n column and window functions to add numbered columns for both ascending lat_n and descending lat_n. Our goal with this is to find the matching column number of the ascending and descending values, or the average if there is an even number or values. To do this, we select from the cte the averge lat_n rounded to 4 decimal places that satisfies the condition ascending row number = descending row number, or one above or below. This should give us our median value. 
+
+with in_order as (
+SELECT lat_n,
+ROW_NUMBER() OVER (ORDER BY lat_n) AS RowAsc,
+ROW_NUMBER() OVER (ORDER BY lat_n DESC) AS RowDesc
+FROM station
+)
+
+SELECT round((AVG(lat_n)), 4) AS median
+FROM in_order
+WHERE RowAsc = RowDesc OR RowAsc + 1 = RowDesc OR RowAsc = RowDesc + 1;
+
 
