@@ -340,4 +340,30 @@ SELECT round((AVG(lat_n)), 4) AS median
 FROM in_order
 WHERE RowAsc = RowDesc OR RowAsc + 1 = RowDesc OR RowAsc = RowDesc + 1;
 
+Question: You are given two tables: Students and Grades. Students contains three columns ID, Name and Marks. Ketty gives Eve a task to generate a report containing three columns: Name, Grade and Mark. Ketty doesn't want the NAMES of those students who received a grade lower than 8. The report must be in descending order by grade -- i.e. higher grades are entered first. If there is more than one student with the same grade (8-10) assigned to them, order those particular students by their name alphabetically. Finally, if the grade is lower than 8, use "NULL" as their name and list them by their grades in descending order. If there is more than one student with the same grade (1-7) assigned to them, order those particular students by their marks in ascending order. Write a query to help Eve.
+Approach: Because we want to treat 2 result sets differently, we know we will use a case statement. The condition we will use is grade < 8 to print null. Otherwise, the student's name will be printed. We specify the end as columns name, grade, and marks. The name column is not the same as s.name since we are using the nulls, so we just say 'name'. We use an inner join to join the students table to the grades table. Since the grades table has a range of values within 2 columns we use between in our on condition. Lastly, we order by grade descending, then by name alphabetically, then by ascending marks.
+
+select 
+case 
+when g.grade < 8 then null
+else s.name
+end as name, g.grade, s.marks from students s
+inner join grades g 
+on s.marks between g.min_mark and g.max_mark
+order by g.grade desc, s.name, s.marks asc
+
+Question: Julia just finished conducting a coding contest, and she needs your help assembling the leaderboard! Write a query to print the respective hacker_id and name of hackers who achieved full scores for more than one challenge. Order your output in descending order by the total number of challenges in which the hacker earned a full score. If more than one hacker received full scores in same number of challenges, then sort them by ascending hacker_id.
+Approach: We first select hacker_id from the submissions table and name from the hackers table. We will need to join all the tables on common columns. To filter for full scores, we need to make sure the score earned by the hacker in the submissions table is the same as the total possible score from tthe difficulty table and also that the score pertains to the difficulty level for that particular challenge. We group by hacker_id and name to narrow to one row per hacker and use a count function to filter to those gaining a full score in more than 1 challenge. Lastly, we order by the number of challenges and by hacker_id.
+
+select s.hacker_id, h.name from submissions s
+inner join hackers h
+on h.hacker_id = s.hacker_id
+inner join challenges c
+on c.challenge_id = s.challenge_id
+inner join difficulty d
+on d.difficulty_level = c.difficulty_level
+where d.score = s.score and d.difficulty_level = c.difficulty_level
+group by s.hacker_id, h.name
+having count(h.name) > 1
+order by count(h.name) desc, s.hacker_id
 
