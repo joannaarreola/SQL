@@ -367,3 +367,36 @@ group by s.hacker_id, h.name
 having count(h.name) > 1
 order by count(h.name) desc, s.hacker_id
 
+Question: Harry Potter and his friends are at Ollivander's with Ron, finally replacing Charlie's old broken wand. Hermione decides the best way to choose is by determining the minimum number of gold galleons needed to buy each non-evil wand of high power and age. Write a query to print the id, age, coins_needed, and power of the wands that Ron's interested in, sorted in order of descending power. If more than one wand has same power, sort the result in order of descending age.
+Approach: We use the desired columns id, age, coins_needed, and power in the select statement and inner join the wands table to the wands property table on the column code. To filter our results to the minimum number of coins needed we use a where clause and an additional select statement within this clause with the same joins. We need to use a different alias for the self joins. Then we can use a where clause to filter to only non-evil wands and set tthe ages and power equal to each other in order to get the best results for these. We lastly order by descending power and descending age.
+
+select w.id, p.age, w.coins_needed, w.power from wands w
+inner join wands_property p
+on w.code = p.code
+where coins_needed = (select (min(coins_needed)) from wands w2
+inner join wands_property p2
+on w2.code = p2.code
+where p2.is_evil = 0
+and p.age = p2.age
+and w.power = w2.power) 
+order by w.power desc, p.age desc
+
+Question: Julia asked her students to create some coding challenges. Write a query to print the hacker_id, name, and the total number of challenges created by each student. Sort your results by the total number of challenges in descending order. If more than one student created the same number of challenges, then sort the result by hacker_id. If more than one student created the same number of challenges and the count is less than the maximum number of challenges created, then exclude those students from the result.
+Approach: We first include our desired columns hacker id, name and a count of the challenges. We join the challenges and hackers table on hackerid for the desired information. We group by hackerid and name since we used the count function and want the totals for each hacker. We can break the desired result set into two parts. In the first part, we want to include all the students with the highest number of challenges created. For this, we use a having clause for the count of challenges and set it equal to a subquery of the highest count of challenges. For the second part, we want to include the counts without duplicates. To do this we use another subquery in which we select the count of challenges having unique values when compared to the original count, excluding matching hacker_ids. Lastly, we order the results by descending totals, and hacker id.
+
+select c.hacker_id, h.name, count(c.challenge_id) from challenges c
+inner join hackers h
+on c.hacker_id = h.hacker_id
+group by c.hacker_id, h.name
+having count(c.challenge_id) = 
+(select count(c1.challenge_id) from challenges as c1 
+group by c1.hacker_id 
+order by count(*) desc
+limit 1) 
+or
+count(c.challenge_id) not in 
+(select count(c2.challenge_id) from challenges as c2
+group by c2.hacker_id 
+having c2.hacker_id <> c.hacker_id)
+order by count(c.challenge_id) desc, hacker_id
+
