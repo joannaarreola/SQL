@@ -400,3 +400,15 @@ group by c2.hacker_id
 having c2.hacker_id <> c.hacker_id)
 order by count(c.challenge_id) desc, hacker_id
 
+Question: You did such a great job helping Julia with her last coding contest challenge that she wants you to work on this one, too! The total score of a hacker is the sum of their maximum scores for all of the challenges. Write a query to print the hacker_id, name, and total score of the hackers ordered by the descending score. If more than one hacker achieved the same total score, then sort the result by ascending hacker_id. Exclude all hackers with a total score of 0 from your result.
+Approach: The first step is to find the maximum scores for all the challenges. In order to do this we use a select statement selecting the columns hackerid, challenge is and the maximum of the score column from the submissions table and group by hacker is and challenge id in order to get the maximum score per challenge per hacker. This becomes our inner query so we can then select the sum of the max scores per hacker, as well as the hackerid and name columns. In order to use the name column we need to perform an inner join with the hackers table on hacker id. We group the results by our non-aggregate columns hackerid and name. Then we filter our results to those having totalscores greater than 0 and lastly we order bytotalscore descending and hackerid.
+
+select ms.hacker_id, h.name, sum(max_score) as totalscore from
+(select hacker_id, challenge_id, max(score) as max_score from submissions 
+group by hacker_id, challenge_id) as ms
+inner join hackers h
+on ms.hacker_id = h.hacker_id
+group by ms.hacker_id, h.name
+having totalscore > 0
+order by totalscore desc, ms.hacker_id
+
