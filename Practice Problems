@@ -412,3 +412,20 @@ group by ms.hacker_id, h.name
 having totalscore > 0
 order by totalscore desc, ms.hacker_id
 
+Question: You are given a table, Projects, containing three columns: Task_ID, Start_Date and End_Date. It is guaranteed that the difference between the End_Date and the Start_Date is equal to 1 day for each row in the table. If the End_Date of the tasks are consecutive, then they are part of the same project. Samantha is interested in finding the total number of different projects completed. Write a query to output the start and end dates of projects listed by the number of days it took to complete the project in ascending order. If there is more than one project that have the same number of completion days, then order by the start date of the project.
+Approach: We wante to remove the overlapping days in between start and end days in order to get the individual project start and end dates. To do this we can create a cte selecting start date, use a window function to order the dates and number the rows and exclude values in the end dates column. We do similarly for end dates. The ordering of the dates and numbering of the rows ensures that the project start date will line up with the proper end date. We then join the ctes on row number and order by the project days and start dates.
+
+with sd as 
+(select Start_Date, 
+row_number() over(order by start_date) as rw from Projects 
+where Start_date not in (select End_Date from Projects))
+,
+ed as 
+(select End_Date, row_number() over(order by end_date) as rw from Projects 
+where End_date not in (select Start_Date from Projects))
+
+select sd.Start_Date, ed.End_Date from sd 
+inner join ed 
+on sd.rw = ed.rw
+order by datediff(ed.End_Date, sd.Start_Date), sd.Start_Date
+
