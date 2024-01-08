@@ -429,3 +429,17 @@ inner join ed
 on sd.rw = ed.rw
 order by datediff(ed.End_Date, sd.Start_Date), sd.Start_Date
 
+Question: You are given three tables: Students, Friends and Packages. Students contains two columns: ID and Name. Friends contains two columns: ID and Friend_ID (ID of the ONLY best friend). Packages contains two columns: ID and Salary (offered salary in $ thousands per month). Write a query to output the names of those students whose best friends got offered a higher salary than them. Names must be ordered by the salary amount offered to the best friends. It is guaranteed that no two students got same salary offer.
+Approach: We first need to create a joined table with the necessary salary information. We start by joining packages to students on id in order to get the student salaries next to their ids and names. We then join friends on id as well to this combined table to add the id of each student's best friend. Lastly, we join packages again, this time on the best friend id in order to get a column of best friend salaries. We can now use a where clause to filter by best friend salary larger than student salary and order by best friend salary.
+
+select s.name from students s
+inner join packages p1
+on s.id = p1.id
+inner join friends f
+on s.id = f.id
+inner join packages p2
+on f.friend_id = p2.id
+where p2.salary > p1.salary
+order by p2.salary
+
+
