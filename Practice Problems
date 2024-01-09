@@ -442,4 +442,21 @@ on f.friend_id = p2.id
 where p2.salary > p1.salary
 order by p2.salary
 
+Question: Pivot the Occupation column in OCCUPATIONS so that each Name is sorted alphabetically and displayed underneath its corresponding Occupation. The output column headers should be Doctor, Professor, Singer, and Actor, respectively. Note: Print NULL when there are no more names corresponding to an occupation. Occupation will only contain one of the following values: Doctor, Professor, Singer or Actor.
+Approach: We first create a cte to order the data. We add the column row_num using a window function which assigns row numbering which starts over for every new occupation with the names ordered alphabetically per occupation. Using this cte, we use case statements to display the names of each occupation, or a null value if there are no more names uder that occupation. The min function applied to these case statements in order to aggregate the row numbers. We establish the column names per min case statement. Lastly, grouping the results by row_num will give all the names per occupation per row number.
+
+with ordered as 
+(select name, occupation,
+ row_number() over (partition by Occupation order by Name) as row_num
+    from OCCUPATIONS
+)
+
+select 
+    min(case when occupation = 'Doctor' then name else NULL end) as Doctor,
+    min(case when occupation = 'Professor' then name else NULL end) as Professor,
+    min(case when occupation = 'Singer' then name else NULL end) as Singer,
+    min(case when occupation = 'Actor' then name else NULL end) as Actor
+from ordered
+group by row_num
+
 
