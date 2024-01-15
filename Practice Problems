@@ -459,4 +459,25 @@ select
 from ordered
 group by row_num
 
+StrataScratch
+Easy
+
+Question: Compare each employee's salary with the average salary of the corresponding department. Output the department, first name, and salary of employees along with the average salary of that department.
+Approach: We first select the specified columns department, first name, and salary. In order to display average salary next to these values without aggregating, we use a window function to get the average salary per depatment.
+
+select department, first_name, salary, avg(salary) over (partition by department) from employee
+
+Question: Find the last time each bike was in use. Output both the bike number and the date-timestamp of the bike's last use (i.e., the date-time the bike was returned). Order the results by bikes that were most recently used.
+Approach: There will be multiple logs for each bike so we will need to use a group by clause in order to get one result per bike. We select the bike number and use a max function on the end time to get the latest time. we group by bike_number then order by the max end time to get our result.
+
+select bike_number, max(end_time) from dc_bikeshare_q1_2012
+group by bike_number
+order by max(end_time) desc
+
+Question: Find the number of employees working in the Admin department that joined in April or later.
+Approach: We use the count function in order to count the number of workers. We then limit the department to admin and the joining month to April or later.
+
+select count(worker_id) from worker
+where department = 'Admin'
+and month(joining_date) >= 4 
 
