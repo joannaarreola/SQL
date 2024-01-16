@@ -481,3 +481,27 @@ select count(worker_id) from worker
 where department = 'Admin'
 and month(joining_date) >= 4 
 
+Question: Find the number of workers by department who joined in or after April. Output the department name along with the corresponding number of workers. Sort records based on the number of workers in descending order.
+Approach: We select the desired column department as well as use the count function for all rows (*) to count the number of workers. We use a where clause to filter the results to April or later using the month function on the column joining date. We then group  by department to get counts for each. And lastly, we order by the number of workers per depatment.
+
+select department, count(*) from worker
+where month(joining_date) >= 4
+group by department
+order by count(*) desc
+
+Question: Find the average number of bathrooms and bedrooms for each city’s property types. Output the result along with the city name and the property type.
+Approach: We select the columns city and property type and use the average function on the columns bathrooms and bedrooms. We group by city and then by property type to get average results for each category.
+
+select city, property_type, avg(bathrooms), avg(bedrooms) 
+from airbnb_search_details
+group by city, property_type
+
+Question: Find the details of each customer regardless of whether the customer made an order. Output the customer's first name, last name, and the city along with the order details.
+You may have duplicate rows in your results due to a customer ordering several of the same items. Sort records based on the customer's first name and the order details in ascending order.
+Approach: we select first name, last name, and city from the customers table and order detils from the orders table. We use a left join to join orders to customers in order to reatain all the records from customers regardless of if an order was made. We join on their common property customer id. Lastly, we order by first name and then order details.
+
+select c.first_name, c.last_name, c.city, o.order_details from customers c
+left join orders o
+on c.id = o.cust_id
+order by c.first_name, o.order_details asc
+
