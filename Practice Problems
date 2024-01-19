@@ -498,10 +498,30 @@ group by city, property_type
 
 Question: Find the details of each customer regardless of whether the customer made an order. Output the customer's first name, last name, and the city along with the order details.
 You may have duplicate rows in your results due to a customer ordering several of the same items. Sort records based on the customer's first name and the order details in ascending order.
-Approach: we select first name, last name, and city from the customers table and order detils from the orders table. We use a left join to join orders to customers in order to reatain all the records from customers regardless of if an order was made. We join on their common property customer id. Lastly, we order by first name and then order details.
+Approach: We select first name, last name, and city from the customers table and order detils from the orders table. We use a left join to join orders to customers in order to reatain all the records from customers regardless of if an order was made. We join on their common property customer id. Lastly, we order by first name and then order details.
 
 select c.first_name, c.last_name, c.city, o.order_details from customers c
 left join orders o
 on c.id = o.cust_id
 order by c.first_name, o.order_details asc
+
+Question: Find the number of rows for each review score earned by 'Hotel Arena'. Output the hotel name (which should be 'Hotel Arena'), review score along with the corresponding number of rows with that score for the specified hotel.
+Approach: We select hotel name, reviewer score and use the count function in order to count the number of rows of each review score. We specify the hotel name and then gorup by hotel name and review score to get our result.
+
+select hotel_name, reviewer_score, count(*) 
+from hotel_reviews
+where hotel_name = 'Hotel Arena'
+group by hotel_name, reviewer_score
+
+Question: Count the number of movies that Abigail Breslin was nominated for an oscar.
+Approach: We use a count function in order to count all rows for our conditions. We set the condition nominee = Abigail Breslin with a where clause to get out answer.
+
+select count(*) from oscar_nominees
+where nominee = 'Abigail Breslin'
+
+Question: Write a query that returns the number of unique users per client per month
+Approach: We use a count function to find the distinct number of users. We include and group by the columns client id and the month portion of time id in order to get our answer.
+
+select count(distinct user_id), client_id, month(time_id) from fact_events
+group by client_id, month(time_id)
 
