@@ -525,3 +525,28 @@ Approach: We use a count function to find the distinct number of users. We inclu
 select count(distinct user_id), client_id, month(time_id) from fact_events
 group by client_id, month(time_id)
 
+Question: Count the number of user events performed by MacBookPro users. Output the result along with the event name. Sort the result based on the event count in the descending order.
+Approach: We use the count function in order to count the total number of rows. We filter our results by device to include only macbook pro users. We group by event name to get counts per event in our answer. Lastly, we order by the counts descending.
+
+select count(*), event_name from playbook_events
+where device = 'macbook pro'
+group by event_name
+order by count(*) desc
+
+Question: Find order details made by Jill and Eva. Consider the Jill and Eva as first names of customers. Output the order date, details and cost along with the first name. Order records based on the customer id in ascending order.
+Approach: We select the desired columns and specify the tables they are from. We inner join the customers table to the orders table in order to retrieve the desired columns. We inner join on their common column customer id. We filter the results to only Jill and Eva's orders using a where clause. Lastly, we order by ascending customer id.
+
+select c.first_name, o.order_date, o.order_details, o.total_order_cost from orders o
+inner join customers c 
+on c.id = o.cust_id
+where c.first_name = 'Jill' or c.first_name = 'Eva'
+order by o.cust_id asc
+
+Question: Find the most profitable company from the financial sector. Output the result along with the continent.
+Approach: We select the desired columns form the table. We filter he table to only incluse financial sector companies using a where clause. We then order by profits and limit to the top result to get our answer.
+
+select company, continent from forbes_global_2010_2014
+where sector = 'Financials'
+order by profits desc
+limit 1
+
