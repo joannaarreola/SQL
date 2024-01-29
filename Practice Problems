@@ -550,3 +550,26 @@ where sector = 'Financials'
 order by profits desc
 limit 1
 
+Question: Find libraries who haven't provided the email address in circulation year 2016 but their notice preference definition is set to email.
+Output the library code.
+Approach: We select distinct library code to avoid dupliactes. We filter to the year 2016, email notice preferences, and no provided email address using where and and clauses.
+
+select distinct home_library_code from library_usage
+where circulation_active_year = 2016
+and notice_preference_definition = 'email'
+and provided_email_address = FALSE
+
+Question: Find the activity date and the pe_description of facilities with the name 'STREET CHURROS' and with a score of less than 95 points.
+Approach: We select the columns activity date and pe description. We use a where clause to filter to the facility name street churros and an and clause to filter to scores below 95.
+
+select activity_date, pe_description from los_angeles_restaurant_health_inspections
+where facility_name = 'STREET CHURROS'
+and score < 95
+
+Question: Find the base pay for Police Captains. Output the employee name along with the corresponding base pay.
+Approach: We select the columns employee name and base pay from the table. We filter the results to include police captains by using a like operator and the terms captain and police.
+
+select employeename, basepay from sf_public_salaries
+where jobtitle like '%Captain%Police%'
+
+
