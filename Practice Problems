@@ -572,4 +572,32 @@ Approach: We select the columns employee name and base pay from the table. We fi
 select employeename, basepay from sf_public_salaries
 where jobtitle like '%Captain%Police%'
 
+Question: Write a query that calculates the difference between the highest salaries found in the marketing and engineering departments. Output just the absolute difference in salaries.
+Approach: We first devise a query to retrieve the top salary from the marketing department. This is given by using the max function on the salary column, joining the employee and dept tables on departemnt id, and limiting the results to only the marketing department using a where clause. We repeat this query for the engineering department then select the adbsolute difference of these two queries.
+
+select abs((select max(e.salary) from db_employee e
+inner join db_dept d
+on e.department_id = d.id
+where d.department = 'marketing')
+-
+(select max(e.salary) from db_employee e
+inner join db_dept d
+on e.department_id = d.id
+where d.department = 'engineering')
+) as salary_diff
+
+Question: Find how many times each artist appeared on the Spotify ranking list Output the artist name along with the corresponding number of occurrences. Order records by the number of occurrences in descending order.
+Approach: We selct the artist as well as use a count function i order to count the number of instances each artist is on the list. We group by artist due to the aggregate count function and order by the count descending.
+
+select artist, count(*) from spotify_worldwide_daily_song_ranking
+group by artist
+order by count(*) desc
+
+Question: Find all Lyft drivers who earn either equal to or less than 30k USD or equal to or more than 70k USD. Output all details related to retrieved records.
+Approach: We select * to retirve all columns from the table. We limit our results to less that or equal to 30k and greater than or equal to 70k using a where clause.
+
+select * from lyft_drivers
+where yearly_salary <= 30000 
+or yearly_salary >= 70000
+
 
