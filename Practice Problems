@@ -639,3 +639,32 @@ inner join facebook_posts p
 on r.post_id = p.post_id
 where r.reaction = 'heart'
 
+Medium
+Question: Find the review_text that received the highest number of  'cool' votes. Output the business name along with the review text with the highest number of 'cool' votes.
+Approach: We select the desired columns business name and review text from the table. We filter the results using a where clause and use a subquery to match the review text with the maximum cool rating.
+
+select business_name, review_text from yelp_reviews 
+where cool = (select max(cool) from yelp_reviews)
+
+Question: Find the number of Apple product users and the number of total users with a device and group the counts by language. Assume Apple products are only MacBook-Pro, iPhone 5s, and iPad-air. Output the language along with the total number of Apple users and users with any device. Order your results based on the number of total users in descending order.
+Approach: We first select language from our users table. To get the count for nly apple users we count the distinct instances where devices are either macbook pros, iphone 5s, or ipad air. We use a case function in order to only count the user ids with these devices. We then count all the user ids. We join the tables using user id as a common value. We lastly group the results by language and order by the total user counts descending.
+
+select u.language, 
+count(distinct case 
+when e.device in ('macbook pro', 'iphone 5s', 'ipad air') then e.user_id
+else null
+end) as apple_users,
+count(distinct e.user_id) as total_users
+from playbook_events e
+inner join playbook_users u on e.user_id = u.user_id
+group by u.language
+order by total_users DESC
+
+Question: Output share of US users that are active. Active users are the ones with an "open" status in the table.
+Approach: We need to calculate the ratio of users with open status in the united states to all users total within the united states. We can use a count and case statement to cunt those user ids where the status is open. We divide this by the count of total user ids. We filter both of these with a where clause to limit the results to usa. 
+
+select 
+count(case when status = 'open' then user_id else null end)/
+count(user_id)
+from fb_active_users
+where country = 'USA'
