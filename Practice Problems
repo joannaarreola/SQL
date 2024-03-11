@@ -668,3 +668,46 @@ count(case when status = 'open' then user_id else null end)/
 count(user_id)
 from fb_active_users
 where country = 'USA'
+
+Question: You are given a dataset that provides the number of active users per day per premium account. A premium account will have an entry for every day that it’s premium. However, a premium account may be temporarily discounted and considered not paid, this is indicated by a value of 0 in the final_price column for a certain day. Find out how many premium accounts that are paid on any given day are still premium and paid 7 days later.
+Output the date, the number of premium and paid accounts on that day, and the number of how many of these accounts are still premium and paid 7 days later. Since you are only given data for a 14 days period, only include the first 7 available dates in your output.
+Approach: We need to join the premium account table to itself in order to take the difference between the dates to include those spaced out by 7 days. We left join on this condition as well as if the final price is > 0 to retain all original table entries and math only those satisfying the conditions. We limit the original table to final price > 0 as well to only incluse paid accounts. We group by date. We order by this column as well and limit the entries to 7. lastly the columns we wish to include in our output are the date, counts of all account ids in the original table (all paid) and a count of the joined values (paid and paid again 7 days later)
+
+select a.entry_date, count(a.account_id) premium_paid_accts, count(b.account_id) premium_paid_accts_7days from premium_accounts_by_day a
+left join premium_accounts_by_day b
+on a.account_id = b.account_id
+and datediff(b.entry_date, a.entry_date) = 7
+and b.final_price > 0
+where a.final_price > 0
+group by a.entry_date
+order by a.entry_date
+limit 7
+
+Question: The election is conducted in a city and everyone can vote for one or more candidates, or choose not to vote at all. Each person has 1 vote so if they vote for multiple candidates, their vote gets equally split across these candidates. For example, if a person votes for 2 candidates, these candidates receive an equivalent of 0.5 vote each.
+Find out who got the most votes and won the election. Output the name of the candidate or multiple names in case of a tie. To avoid issues with a floating-point error you can round the number of votes received by a candidate to 3 decimal places.
+Approach: We first create a cte where a new column is added to assign the value 1 or 0 to a voter based on whether they voted or not. We also add a coulmn counting the number or people each voter voted for using a window function. Using this cte, we select the candidate with the most points by ordering by their cumulative points found using a sum function on the rounded result of vote binary (vote or no vote) / number or votes per voter.
+
+with cte as (
+SELECT
+    voter,
+    candidate,
+    CASE
+        WHEN candidate is null THEN 0
+        ELSE 1
+    END AS vote_binary, 
+    count(candidate) OVER (PARTITION BY voter) AS number_of_votes
+FROM 
+    voting_results )
+    
+select candidate as candidate_votes from cte
+group by candidate
+order by sum(round(vote_binary/number_of_votes, 3)) desc
+limit 1
+
+Question: For each video, find how many unique users flagged it. A unique user can be identified using the combination of their first name and last name. Do not consider rows in which there is no flag ID.
+Approach: We concatenate the first and last names in order to form a full name column. We count each distinct per flagged video. That is one wih flag id not null and group by video.
+
+select count(distinct concat(user_firstname, ' ', user_lastname)), video_id 
+from user_flags
+where flag_id is not null
+group by video_id
