@@ -732,3 +732,37 @@ select distinct year_rank, group_name, song_name from billboard_top_100_year_end
 where year = 2010
 order by year_rank asc
 limit 10
+
+Question: Classify each business as either a restaurant, cafe, school, or other.
+•	A restaurant should have the word 'restaurant' in the business name.
+•	A cafe should have either 'cafe', 'café', or 'coffee' in the business name.
+•	A school should have the word 'school' in the business name.
+•	All other businesses should be classified as 'other'.
+Output the business name and their classification.
+Approach: In order to classify int groups, we use the case function. Using the case function we match the lowercase business names to the terms specified. The like operator with a % symbol on either side looks for that word in any part of the business name. Any left over unmatched business names are captured as other. To avoid duplicates we use distinct when selecting the business name column.
+
+select distinct business_name,
+case 
+when lower(business_name) like "%restaurant%" then "restaurant"
+when lower(business_name) like "%cafe%"
+    or lower(business_name) like "%café%"
+    or lower(business_name) like "%coffee%"
+    then "cafe"
+when lower(business_name) like "%school%" then "school"
+else "other"
+end as classification
+from sf_restaurant_health_violations
+
+Question: You're given a dataset of health inspections. Count the number of violation in an inspection in 'Roxanne Cafe' for each year. If an inspection resulted in a violation, there will be a value in the 'violation_id' column. Output the number of violations by year in ascending order.
+Approach: We use the count function to count all rows and select the year portion of the inspection date column from the table. We filter the results to only roxanne cafe and where a violation was found. We lastly group the results by year in order to get a count per year.
+
+select count(*), year(inspection_date) from sf_restaurant_health_violations
+where business_name = "Roxanne Cafe"
+and violation_id is not null
+group by year(inspection_date)
+
+Question: Find the rate of processed tickets for each type.
+Approach: We can use a subquery to find the numberator in which processed is true. In the outer query, this number is divided by the total count and grouped per type.
+
+select (select count(*) from facebook_complaints where processed = "TRUE")/count(*), type from facebook_complaints
+group by type
