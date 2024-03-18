@@ -766,3 +766,35 @@ Approach: We can use a subquery to find the numberator in which processed is tru
 
 select (select count(*) from facebook_complaints where processed = "TRUE")/count(*), type from facebook_complaints
 group by type
+
+Question: Calculate the total revenue from each customer in March 2019. Include only customers who were active in March 2019. Output the revenue along with the customer id and sort the results based on the revenue in descending order.
+Approach: We select the customer id column along with the sum of order costs. We filter the results to March of 2019. We then group by customer to get order totals per customer. Latly, we order by these totals descending. 
+
+select cust_id, sum(total_order_cost) from orders
+where month(order_date) = 3 and year(order_date) = 2019
+group by cust_id
+order by sum(total_order_cost) desc
+
+Question: Make a report showing the number of survivors and non-survivors by passenger class.
+Classes are categorized based on the pclass value as:
+pclass = 1: first_class
+pclass = 2: second_classs
+pclass = 3: third_class
+Output the number of survivors and non-survivors by each class.
+Approach: We select the pclass column to display the class, sum(survived) will give us the total number of survivors since this column is binary. We can calulate the number of non-survivers by taking the total count of passengers and subtracting the survivors. We lastly group by class to get totals per class.
+
+select pclass,
+        sum(survived) as survivors, 
+        (count(*)- sum(survived)) as non_survivors  
+        from titanic
+group by pclass
+
+Question: Find the second highest salary of employees.
+Approach: We create a cte with a ranking of the salaries in descending order using the dense rank function. From the cte we select the salary with a ranking of 2.
+
+with cte as (
+select *,
+dense_rank() over(order by salary desc) as salary_rank
+from employee)
+select salary from cte 
+where salary_rank = 2
