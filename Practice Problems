@@ -798,3 +798,30 @@ dense_rank() over(order by salary desc) as salary_rank
 from employee)
 select salary from cte 
 where salary_rank = 2
+
+Question: Find employees who are earning more than their managers. Output the employee's first name along with the corresponding salary.
+Approach: This table lists each employee with an id including managers, their salaries, and the id of their corresponding manager. We can join the table to itself in order to add columns for the manager's information on the same row as that of the employees. We join on the common field id and manager id. Then we filter the results to where employee salary is greater than manager salary.
+
+select e1.first_name, e1.salary from employee e1
+inner join employee e2
+on e1.manager_id = e2.id
+where e1.salary > e2.salary
+
+Question: Find the employee with the highest salary per department. Output the department name, employee's first name along with the corresponding salary.
+Approach: We can find the top salaries per department by using the max function on the salary column and grouping by department. We make this into a cte named max salaries in order to join this table to the original employees table on the condition salary = max salary.
+
+with maxsalaries as
+(select department as dept, max(salary) as maxsalary from employee
+group by department)
+
+select e.department, e.first_name, maxsalaries.maxsalary from employee e
+inner join maxsalaries
+on e.salary = maxsalaries.maxsalary
+
+Question: Find the highest target achieved by the employee or employees who works under the manager id 13. Output the first name of the employee and target achieved. The solution should show the highest target achieved under manager_id=13 and which employee(s) achieved it.
+Approach: We fist construct the subquery to select the max target from the table where manager 1d is 13. Then we construct the outer query in which we output the names and target numbers having manager id 13 and the max target number calculated in the subquery.
+
+select first_name, target from salesforce_employees
+where manager_id = 13
+and target = (select max(target) from salesforce_employees
+where manager_id = 13)
