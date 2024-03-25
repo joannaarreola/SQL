@@ -825,3 +825,31 @@ select first_name, target from salesforce_employees
 where manager_id = 13
 and target = (select max(target) from salesforce_employees
 where manager_id = 13)
+
+Question: Find the customer with the highest daily total order cost between 2019-02-01 to 2019-05-01. If customer had more than one order on a certain day, sum the order costs on daily basis. Output customer's first name, total cost of their items, and the date. For simplicity, you can assume that every first name in the dataset is unique.
+Approach: We first need to join the tables on their common value customer id. We then pick our desired columns using the sum of total order cost inorder to aggregate these by person by day. We filter the results to our specified time fram using a where clause. We then group the results by first name and order date to get our desired sum. Lastly, we order by the sum or total order cost descending and limit the result to 1 to get the top spender.
+
+select c.first_name, sum(o.total_order_cost), o.order_date from customers c
+inner join orders o
+on c.id = o.cust_id
+where order_date between '2019-02-01' and '2019-05-01'
+group by c.first_name, o.order_date
+order by sum(o.total_order_cost) desc
+limit 1
+
+Question: Find the Olympics with the highest number of athletes. The Olympics game is a combination of the year and the season, and is found in the 'games' column. Output the Olympics along with the corresponding number of athletes.
+Approach: We select the games column and  take a count of the unique ids per olymipcs to get a count of athletes. We group by games to get our desired count. Lastly, we order by the count descending and limit to 1 to get our top result. 
+
+select games, count(distinct id) from olympics_athletes_events
+group by games
+order by count(distinct id) desc
+limit 1
+
+Question: Find songs that have ranked in the top position. Output the track name and the number of times it ranked at the top. Sort your records by the number of times the song was in the top position in descending order.
+Approach: We select the trackname column and count the occurences of each trackname as well using the count function. We filter the results to where position is 1 and group by trackname. We order the results by number of times at the top descending.
+
+select trackname, count(trackname) from spotify_worldwide_daily_song_ranking
+where position = 1
+group by trackname
+order by count(trackname) desc
+
