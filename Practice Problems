@@ -853,3 +853,25 @@ where position = 1
 group by trackname
 order by count(trackname) desc
 
+Question: Find all wineries which produce wines by possessing aromas of plum, cherry, rose, or hazelnut. To make it more simple, look only for singular form of the mentioned aromas. HINT: if one of the specified words is just a substring of another word, this should not be a hit, but a miss.
+Example Description: Hot, tannic and simple, with cherry jam and currant flavors accompanied by high, tart acidity and chile-pepper alcohol heat.
+Therefore the winery Bella Piazza is expected in the results.
+Approach: We select the winery column and specify discinct so that there are no repetitions. We use a where clause to filter our results. The description column is converted to lowercase to account for any use of the word, capital or lowercase. We use the regexp to match any of the descriptive words followed by a non lowercase letter.
+
+select distinct winery from winemag_p1
+where lower(description) regexp "(plum|cherry|rose|hazelnut)([^a-z])"
+
+Question: Find the top 5 businesses with most reviews. Assume that each row has a unique business_id such that the total reviews for each business is listed on each row. Output the business name along with the total number of reviews and order your results by the total reviews in descending order.
+Approach: We select the business name and review count columns from the table. We order by the review count column in descending order and limit the result to the top.
+
+select name, review_count from yelp_business
+order by review_count desc
+limit 5
+
+Question: Find the percentage of shipable orders. Consider an order is shipable if the customer's address is known.
+Approach: We first join the customers table to the orders table using a left join using their common column customer id. We then select the proportion of the count of adresses from the customers table and the total number of rows/orders from the orders table. We multiply this by 100 to convert from a decimal.
+
+select (count(c.address)/count(*))*100 from orders o
+left join customers c
+on o.cust_id = c.id
+
