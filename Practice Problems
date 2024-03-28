@@ -875,3 +875,37 @@ select (count(c.address)/count(*))*100 from orders o
 left join customers c
 on o.cust_id = c.id
 
+Question: Calculate the percentage of spam posts in all viewed posts by day. A post is considered a spam if a string "spam" is inside keywords of the post. Note that the facebook_posts table stores all posts posted by users. The facebook_post_views table is an action table denoting if a user has viewed a post.
+Approach: We first create a cte in which we join the tables using a left join. This ensures that the results remaining are only posts that have been viewed. Withtin this cte, we also ensure that each post only shows up once by using distinct on the post_id column. Lastly in the cte, we create a new column using the case function in which we asign the number 1 in the case the post is spam and 0 if it is not. From this cte we can extract the desired ratio of spam viewed posts to all viewed posts by post date.
+
+with cte as(
+select distinct p.post_id, p.poster, p.post_text, p.post_keywords, p.post_date, 
+case when post_keywords like "%spam%" then 1
+else 0
+end as spam_binary
+from facebook_post_views v
+left join facebook_posts p
+on v.post_id = p.post_id)
+
+select post_date, (sum(spam_binary)/count(*))*100 from cte
+group by post_date
+
+Question: Find the number of apartments per nationality that are owned by people under 30 years old. Output the nationality along with the number of apartments. Sort records by the apartments count in descending order.
+Approach: We first use a left join to join the two tables on their commonn column host id. We then filter the results using a where clause to unit type apartment and age < 30. We use the count function along with distinct to count unique unit ids to get a count of apartments meeting the specified conditions. We also include the nationality column. We also group by the nationality column to get a count per nationality. Lastly we order by the count descending.
+
+select count(distinct u.unit_id), nationality from airbnb_units u
+left join airbnb_hosts h
+on u.host_id = h.host_id
+where u.unit_type = "Apartment"
+and h.age < 30
+group by nationality
+order by count(distinct u.unit_id) desc
+
+Question: Rank guests based on the total number of messages they've exchanged with any of the hosts. Guests with the same number of messages as other guests should have the same rank. Do not skip rankings if the preceding rankings are identical. Output the rank, guest id, and number of total messages they've sent. Order by the highest number of total messages first.
+Approach: Due to the nature of the specified ranking system, we know we will use a dense_rank as opposed to a rank function. We dende rank over the sum of number or messages in descending order and include the id_guest column and sum of messages. We group by the id_guest column in order to get a sum or messages per id. Lastly we order by the number or messages in descending order.
+select 
+dense_rank() over (order by sum(n_messages) desc) as ranks,
+id_guest, sum(n_messages)
+from airbnb_contacts
+group by id_guest
+order by (n_messages) desc
