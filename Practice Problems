@@ -946,4 +946,35 @@ group by p.title, p.budget
 having ceil(sum(ds.daily_salary*datediff(p.end_date, p.start_date))) > p.budget
 order by p.id
 
+Question: You are given a table of product launches by company by year. Write a query to count the net difference between the number of products companies launched in 2020 with the number of products companies launched in the previous year. Output the name of the companies and a net difference of net products released for 2020 compared to the previous year.
+Approach: We create 2 ctes with the respective counts for launches per year. One for 2019 and one for 2020. We combine these two ctes with an inner join on company name in our query and take a difference in launch counts.
+
+with 2019_launches as(
+select company_name, count(distinct product_name) as 2019_num from car_launches
+where year = 2019
+group by company_name
+),
+
+2020_launches as(
+select company_name, count(distinct product_name) as 2020_num from car_launches
+where year = 2020
+group by company_name
+)
+
+select 2019_launches.company_name, 2020_num - 2019_num from 2019_launches
+inner join 2020_launches 
+on 2019_launches.company_name = 2020_launches.company_name 
+
+Question: Find the email activity rank for each user. Email activity rank is defined by the total number of emails sent. The user with the highest number of emails sent will have a rank of 1, and so on. Output the user, total emails, and their activity rank. Order records by the total emails in descending order. Sort users with the same number of emails in alphabetical order.
+In your rankings, return a unique value (i.e., a unique rank) even if multiple users have the same number of emails. For tie breaker use alphabetical order of the user usernames.
+Approach: We first create a cte with the number of emails per user using the count and group by functions. Using this cte we can seletct the desired columns, and use the row number window function to number the values ordered by the email counts desc and usernames asc. We lastly order the results in the same way.
+
+with email_counts as(
+select from_user, count(*) as num_emails from google_gmail_emails
+group by from_user
+)
+select from_user, num_emails, row_number() over (order by num_emails desc, from_user asc) as activity_rank from email_counts
+order by num_emails desc, from_user asc
+
+
 
