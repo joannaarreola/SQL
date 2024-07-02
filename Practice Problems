@@ -976,5 +976,51 @@ group by from_user
 select from_user, num_emails, row_number() over (order by num_emails desc, from_user asc) as activity_rank from email_counts
 order by num_emails desc, from_user asc
 
+Question: Calculate each user's average session time. A session is defined as the time difference between a page_load and page_exit. For simplicity, assume a user has only 1 session per day and if there are multiple of the same events on that day, consider only the latest page_load and earliest page_exit, with an obvious restriction that load time event should happen before exit time event . Output the user_id and their average session time.
+Approach: We begin by creating two ctes to filter out unnecessary entries from the original table. The first cte is where each session begins, outputting the latest page load per day as our timestamp. The second cte similarly outputs the earliest page load per day. We combine the ctes on user id and date to get a single rows with page loads and exits per day. To get the average sessions, we take a sim of the time differences per session and divide by the number of sessions per user. We group by user in order to get our final result.
+
+with begin_session as (
+select user_id, max(timestamp) as latest_load, date(timestamp), action from facebook_web_log
+where action = 'page_load'
+group by user_id, date(timestamp)
+),
+end_session as (
+select user_id, min(timestamp) as earliest_exit, date(timestamp), action from facebook_web_log
+where action = 'page_exit'
+group by user_id, date(timestamp)
+)
+select b.user_id, sum(timestampdiff(second, b.latest_load, e.earliest_exit))/count(b.user_id) as avg_session_time from begin_session b
+inner join end_session e
+on b.user_id = e.user_id
+and date(b.latest_load) = date(e.earliest_exit)
+group by b.user_id
+
+Question: You have been asked to find the job titles of the highest-paid employees. Your output should include the highest-paid title or multiple titles with the same salary.
+Approach: We join the two tables on their common field worker id. We then set the where condition to the maximum salary from the worker table. We select the title column to output all titles satisfying this condition.
+
+select t.worker_title from worker w
+inner join title t
+on t.worker_ref_id = w.worker_id
+where salary = (select max(salary) from worker)
+
+Question: Find the 3 most profitable companies in the entire world. Output the result along with the corresponding company name. Sort the result based on profits in descending order.
+Approach: We select the company and profits columns. We order the results by profits descending and limit to the top 3 results.
+
+select company, profits from forbes_global_2010_2014
+order by profits desc
+limit 3
+
+Question: Find the average total compensation based on employee titles and gender. Total compensation is calculated by adding both the salary and bonus of each employee. However, not every employee receives a bonus so disregard employees without bonuses in your calculation. Employee can receive more than one bonus. Output the employee title, gender (i.e., sex), along with the average total compensation.
+Approach: We first create a cte with the total bnuses per employee. We do this by taking the sum of the bnus column and grouping by worker id. We then join the cte to the employee table using an inner join in order to only include employees with bonuses. We select title, sex and the average of total compensation which is bonus plus salary. WE group by title and sex to get our averages.
+
+with bonus_totals as (
+select worker_ref_id, sum(bonus) as tot_bonus from sf_bonus
+group by worker_ref_id
+)
+
+select e.employee_title, e.sex, avg(b.tot_bonus + e.salary) from sf_employee e
+inner join bonus_totals b
+on b.worker_ref_id = e.id
+group by e.employee_title, e.sex
 
 
