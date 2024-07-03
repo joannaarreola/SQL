@@ -1023,4 +1023,27 @@ inner join bonus_totals b
 on b.worker_ref_id = e.id
 group by e.employee_title, e.sex
 
+Hard
+Question: Find the popularity percentage for each user on Meta/Facebook. The popularity percentage is defined as the total number of friends the user has divided by the total number of users on the platform, then converted into a percentage by multiplying by 100.
+Output each user along with their popularity percentage. Order records in ascending order by user id.
+The 'user1' and 'user2' column are pairs of friends.
+Approach: We first create a cte combining all the friend pairings so that they repeat per user. We do this by flipping the columns and using the union all operator. We create a second cte to count all users on the platform by counting distinct user1 values. Lastly, our final query consists of selecting the user1 column, and the calculation of all rows (per user 1) divided by total users and multiplied by 100. We group by user 1 to return values per user and order by user ids asc.
+
+with cte as(
+SELECT user1, user2
+FROM facebook_friends
+UNION ALL
+SELECT user2, user1
+FROM facebook_friends
+),
+
+user_count as(
+select count(distinct user1) as total_users from cte
+)
+
+select user1, (count(*)/(select total_users from user_count))*100 as popularity_percentage from cte
+group by user1
+order by user1 asc
+
+
 
