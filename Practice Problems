@@ -1045,5 +1045,27 @@ select user1, (count(*)/(select total_users from user_count))*100 as popularity_
 group by user1
 order by user1 asc
 
+Question: Select the most popular client_id based on a count of the number of users who have at least 50% of their events from the following list: 'video call received', 'video call sent', 'voice call received', 'voice call sent'.
+Approach: We first create a cte in order to categorize the event types into the desired events and non-desired. We do this by selecting the relevant columns and using a case statement to categorize and assign a 1 to desired events and 0 to all others. Using this cte we create a second in order to satisfy the 50% condition. We do this by selecting the relevant columns and setting a having condition to the sum of the selected events from the case statament over total events. We do this per user and include client id. In order to determine the popularity of client ids after satisfying the necessary conditions we take a count of the remaining data per client id. Lastly, we select the top client id from this final cte to get our result.
+
+with cte as (
+select client_id, user_id, event_type, 
+case
+when event_type in ('video call received', 'video call sent', 'voice call received', 'voice call sent') then 1
+else 0
+end as selected_events
+from fact_events
+),
+cte2 as (
+select client_id, user_id from cte
+group by client_id, user_id
+having sum(selected_events)/count(event_type) >= 0.5
+),
+cte3 as (
+select client_id, count(*) as client_id_count from cte2
+group by client_id)
+
+select client_id from cte3
+having max(client_id_count)
 
 
