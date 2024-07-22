@@ -1066,6 +1066,42 @@ select client_id, count(*) as client_id_count from cte2
 group by client_id)
 
 select client_id from cte3
-having max(client_id_count)
+having max(client_id_count)\
+
+
+Question: Find the total number of downloads for paying and non-paying users by date. Include only records where non-paying customers have more downloads than paying customers. The output should be sorted by earliest date first and contain 3 columns date, non-paying downloads, paying downloads.
+Approach: We start by creating ctes seperating the paid accounts from the non paid accounts. We then separate the paying downloads from the non-paying downloads using these previous ctes. Lastly, we combine the downloads tables using the date as our common column and use a where clause to satisfy the condition where non-paying customers have more downloads than paying customers. We order by date (asc by default)
+
+with paying as (
+select ud.user_id, ud.acc_id, ad.paying_customer from ms_user_dimension ud
+inner join ms_acc_dimension ad
+on ud.acc_id = ad.acc_id
+where ad.paying_customer = 'yes'
+),
+non_paying as (
+select ud.user_id, ud.acc_id, ad.paying_customer from ms_user_dimension ud
+inner join ms_acc_dimension ad
+on ud.acc_id = ad.acc_id
+where ad.paying_customer = 'no'
+),
+paying_downloads as (
+select df.date, sum(df.downloads) as tot_downloads from ms_download_facts df
+inner join paying p
+on df.user_id = p.user_id
+group by df.date
+),
+non_paying_downloads as (
+select df.date, sum(df.downloads) as tot_downloads from ms_download_facts df
+inner join non_paying np
+on df.user_id = np.user_id
+group by df.date
+)
+
+select pd.date, pd.tot_downloads, npd.tot_downloads from paying_downloads pd
+inner join non_paying_downloads npd
+on pd.date = npd.date
+where npd.tot_downloads > pd.tot_downloads
+order by date
+
 
 
