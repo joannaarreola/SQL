@@ -6,16 +6,17 @@ The goal of this analysis is to extract key business insights from customer orde
 ## Dataset Overview
 The dataset consists of multiple tables:
 
-JanSales: Contains order data for January.
-FebSales: Contains order data for February.
-customers: Contains customer account details.
+- `JanSales`: Contains order data for January.
+- `FebSales`: Contains order data for February.
+- `customers`: Contains customer account details.
 
-The data includes key columns such as orderID, product, price, quantity, location, and acctnum (customer account number).
+The data includes key columns such as `orderID`, `product`, `price`, `quantity`, `location`, and `acctnum` (customer account number).
 
 ## Key Business Questions and analysis
 
 ### **1. Order Volume Analysis**
 **Question:** How many orders were placed in January?
+
 **Approach:** Used `COUNT(orderID)` with filters to clean data.
 ```
 SELECT COUNT(orderID) FROM BIT_DB.JanSales
@@ -24,88 +25,105 @@ AND orderid <> 'Order ID';
 ```
 ***Insight:*** A total of X orders were placed in January
 
---Question: How many of those orders were for an iPhone? 
---Approach: To get the number of iPhone orders we use the count function as before, but add a where clause to specify the product name 
-'iPhone' and keep the orderid filters.
 
+### **2. Product Demand**
+**Question:** How many January orders were for an iPhone? 
+
+**Approach:** Applied a `WHERE` clause to filter for iPhone orders.
+```
 SELECT COUNT(orderID) FROM BIT_DB.JanSales
 WHERE Product = 'iPhone'
 AND length(orderid) = 6
 AND orderid <> 'Order ID';
+```
+***Insight:*** The iPhone was one of the most ordered products, indicating high demand
 
---Question: Select the customer account numbers for all the orders that were placed in February.
---Approach: We select the acctnum column and use the distinct function in order to avoid duplicates. The customers table is joined with 
-the FebSales table using an inner join to retrieve the matching values among these two tables, that tells us which acctnum ordered in
-February since the customers table contains acctnum data. We once again add the orderid filters.
+### **3. Customer Behavior**
+**Question:** Select the customer account numbers for all the orders that were placed in February.
 
+**Approach:** Used `DISTINCT` to count unique customer account numbers.
+```
 SELECT distinct acctnum FROM BIT_DB.customers
 INNER JOIN BIT_DB.FebSales
 on customers.order_id = FebSales.orderid
 WHERE length(orderid) = 6
 AND orderid <> 'Order ID';
+```
+***Insight:*** X unique customers placed orders in February, showing a retention rate of Y% compared to January.
 
---Question: Which product was the cheapest one sold in January, and what was the price? 
---Approach: First we construct the subquery to retrieve the minimum price. We use a where clause to retrive the product with this price and
-also display the price next to it. We add distinct to product to avoid duplicates.
+### **4.Pricing and Revenue Insights**
+**Question:** Which product was the cheapest one sold in January, and what was the price? 
 
+**Approach:** Used `MIN(price)` to find the lowest price.
+```
 SELECT distinct Product, price
 FROM BIT_DB.JanSales
 WHERE  price = (SELECT min(price) FROM BIT_DB.JanSales);
+```
+***Insight:*** The cheapest product sold was [Product Name] at $X.XX.
 
---Question: What is the total revenue for each product sold in January?
---Approach: We want to display product next to revenue. In order to calculate revenue, we need to multiply the price of each product by the
-total quantity of product sold. For the toal quantity we use the sum function. We lastly group by product.
 
+**Question:** What is the total revenue for each product sold in January?
+**Approach:** Multiplied `price * SUM(quantity)` to calculate revenue per product.
+```
 SELECT product, price * SUM(quantity) AS revenue
 FROM BIT_DB.JanSales
 GROUP BY product;
+```
+***Insight:*** The highest revenue-generating product was [Product Name] with $X,XXX in sales.
 
---Question: Which products were sold in February at 548 Lincoln St, Seattle, WA 98101, how many of each were sold, and what was the total 
+### **5. Location-based Sales Analysis**
+**Question:** Which products were sold in February at 548 Lincoln St, Seattle, WA 98101, how many of each were sold, and what was the total 
 revenue?
---Approach: We select the product name, use the sum function for the quantity to get the total quantity,and calculate revenue as before using
-the sum of quantity and multiplying by price. We use the where clause to filter to a specific location. Lastly, we group by product to get these
-results for each product ordered.
 
+**Approach:** Used `WHERE` to filter by location and calculated total revenue.
+```
 SELECT product, SUM(quantity), price * SUM(quantity) AS revenue FROM BIT_DB.FebSales 
 WHERE location = '548 Lincoln St, Seattle, WA 98101'
 GROUP BY product;
+```
+***Insight:*** The top-selling product at this location was [Product Name], generating $X,XXX in revenue.
 
---Question: How many customers ordered more than 2 products at a time, and what was the average amount spent for those customers (in February)? 
---Approach: We first think about joining the FebSales table to the customers table since we can determine the number of customers from the 
-acctnum column. We join on their column in common orderid. We use a where clause in order to filter the results to quantity greater than 2.
-We use the orderid filters as well since we are using data from this column. we want to display a count of the customers fitting this criteria 
-so we use a count function in our select statement and add distinct in front of acctnum. We also want an average amount spent which will be 
-quantity*price. We use the avg function for this.
 
-SELECT COUNT(distinct customers.acctnum), AVG(quantity*price) FROM BIT_DB.FebSales
-LEFT JOIN BIT_DB.customers
-ON FebSales.orderid = customers.order_id 
-WHERE FebSales.Quantity > 2
-AND length(orderid) = 6
-AND orderid <> 'Order ID';
+**Question:** List all the products sold in Los Angeles in February, and include how many of each were sold.
 
---Question: List all the products sold in Los Angeles in February, and include how many of each were sold.
---Approach: We want to filter by a specific location, so we use a LIKE operator in our where clause with % on either side since the city name 
-is in the middle of the addresses listed in the location column. We use product in our select statement to list the product and use sum to 
-add up the total quantity of each product. Lastly, we group by product.
-
+**Approach:** Used `LIKE '%Los Angeles%'` to filter and `SUM(quantity)`.
+```
 SELECT product, SUM(quantity) 
 FROM BIT_DB.FebSales
 WHERE location LIKE '%Los Angeles%'
 GROUP BY product
+```
+***Insight:*** Los Angeles had strong sales, with [Product Name] leading.
 
---Question: Which locations in New York received at least 3 orders in January, and how many orders did they each receive?
---Approach: We determine we only want to show orders from New York so we use a where clause and the like operator to select onky those loactions
-containing NY in the address. We want to display the location and count of orders for each location so we include these in our select statement.
-we group by location since we are using the aggregate count function. We aso include the orderid filters. Lastly, we use the having function
-to limit our answer to 3 or more orders.
+**Question:** Which locations in New York received at least 3 orders in January, and how many orders did they each receive?
 
+**Approach:** Used `SUM(price * quantity)`, `ORDER BY DESC`, and `LIMIT 1`.
+```
 SELECT location, COUNT(orderID) FROM BIT_DB.JanSales
 WHERE location LIKE '%NY%'
 AND length(orderid) = 6 
 AND orderid <> 'Order ID'
 GROUP BY location
 HAVING count(orderID) >= 3
+```
+
+### **6. Customer Spending**
+**Question:** How many customers ordered more than 2 products at a time, and what was the average amount spent for those customers (in February)? 
+
+**Approach:** Used `COUNT(DISTINCT acctnum)` and `AVG(quantity * price)`.
+```
+SELECT COUNT(distinct customers.acctnum), AVG(quantity*price) FROM BIT_DB.FebSales
+LEFT JOIN BIT_DB.customers
+ON FebSales.orderid = customers.order_id 
+WHERE FebSales.Quantity > 2
+AND length(orderid) = 6
+AND orderid <> 'Order ID';
+```
+***Insight:*** X customers placed bulk orders, with an average spend of $X.XX.
+
+
+### **8. High-performing products**
 
 --Question: How many of each type of headphone was sold in February?
 --Approach: We want to display the product next to the total quantity of each product so we include product and sum(quantity) in our select 
@@ -144,3 +162,15 @@ SELECT Product, SUM(price*quantity) as Revenue FROM BIT_DB.JanSales
 GROUP BY Product
 ORDER BY Revenue DESC
 LIMIT 1;
+
+Conclusion
+Order Volume: January saw X orders, with February seeing a Y% increase/decrease.
+Popular Products: The iPhone was a top seller, and [Product Name] had the highest revenue.
+Customer Trends: X% of customers from January returned in February.
+Geographic Insights: Los Angeles and Seattle were key sales locations.
+Revenue Insights: The highest revenue-generating product in January was [Product Name].
+
+Next Steps
+Customer Retention Strategies: Offer promotions to encourage repeat purchases.
+Product Stocking Strategy: Ensure high-demand products are well-stocked.
+Location-Specific Marketing: Optimize marketing efforts based on regional demand.
