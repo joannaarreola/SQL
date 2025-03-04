@@ -1,9 +1,9 @@
-#Customer Order Data Analytics
+# Customer Order Data Analytics
 
-##Objective
+## Objective
 The goal of this analysis is to extract key business insights from customer order data across multiple months. By querying a structured database, we aim to uncover trends in sales, revenue, and customer behavior.
 
-##Dataset Overview
+## Dataset Overview
 The dataset consists of multiple tables:
 
 JanSales: Contains order data for January.
@@ -12,9 +12,9 @@ customers: Contains customer account details.
 
 The data includes key columns such as orderID, product, price, quantity, location, and acctnum (customer account number).
 
-##Key Business Questions and analysis
+## Key Business Questions and analysis
 
-###**1. Order Volume Analysis**
+### **1. Order Volume Analysis**
 **Question:** How many orders were placed in January?
 **Approach:** Used `COUNT(orderID)` with filters to clean data.
 ```
