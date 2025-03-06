@@ -24,6 +24,7 @@ WHERE length(orderid) = 6
 AND orderid <> 'Order ID';
 ```
 *Repeat for February*
+
 ***Insight:*** A total of 9268 orders were placed in January. 11507 orders were placed in February. Order volume increased by 24% from January to February.
 
 ### **2. Product Demand**
@@ -37,6 +38,7 @@ ORDER BY Revenue DESC
 LIMIT 1;
 ```
 *Repeat for February*
+
 ***Insight:*** The Macbook Pro Laptop brought in the most revenue in January at $399,500. The Macbook Pro Laptop also brought in the most revenue in February at $467,500. 
 
 **Question:** How many of each type of headphone were sold in January and February?
@@ -48,6 +50,7 @@ WHERE Product like '%Headphones%'
 GROUP BY Product
 ```
 *Repeat for February*
+
 ***Insight:*** Wired Headphones had the highest numbers, followed by Apple, then Bose headphones in both months.
 
 **Question:** What was the best seller in terms of quantity?
@@ -59,6 +62,7 @@ GROUP BY Product
 ORDER BY sum(Quantity) desc
 ```
 *Repeat for February*
+
 ***Insight:*** AAA batteries had the highest number of sales
 
 ### **5. Location-based Sales Analysis**
@@ -75,6 +79,7 @@ group by city
 order by revenue desc
 ```
 *Repeat for February*
+
 ***Insight:*** The top 3 cities were San Francisco, Los Angeles, and New York City in both months. Revenue for San Francisco was 1.5 that of Los Angeles. Los Angeles and New York brought in similar numbers. The city that generated the least revenue was Austin in both months.
 
 **Question:** Identify the top performing products in each major revenue-generating city. Are there any differences in preferences?
@@ -91,6 +96,7 @@ group by city, product
 order by revenue desc
 ```
 *Repeat for February*
+
 ***Insight:*** The top products in San Francisco, Los Angeles and New York City were the Macbook Pro Laptop, iPhone, Google Phone, and ThinkPad Laptop.
 
 ### **3. Customer Behavior**
