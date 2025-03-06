@@ -41,6 +41,7 @@ LIMIT 1;
 
 ***Insight:*** The Macbook Pro Laptop brought in the most revenue in January at $399,500. The Macbook Pro Laptop also brought in the most revenue in February at $467,500. 
 
+<br><br>
 **Question:** How many of each type of headphone were sold in January and February?
 
 **Approach:** Grouped by `Product` and used `SUM(Quantity)`
@@ -53,6 +54,7 @@ GROUP BY Product
 
 ***Insight:*** Wired Headphones had the highest numbers, followed by Apple, then Bose headphones in both months.
 
+<br><br>
 **Question:** What was the best seller in terms of quantity?
 
 **Approach:** Grouped by `Product` and used `SUM(Quantity)`
@@ -82,6 +84,7 @@ order by revenue desc
 
 ***Insight:*** The top 3 cities were San Francisco, Los Angeles, and New York City in both months. Revenue for San Francisco was 1.5 that of Los Angeles. Los Angeles and New York brought in similar numbers. The city that generated the least revenue was Austin in both months.
 
+<br><br>
 **Question:** Identify the top performing products in each major revenue-generating city. Are there any differences in preferences?
 
 **Approach:** Used `substr` to filter by city and included product along with revenue per city.
