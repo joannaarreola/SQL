@@ -4,6 +4,8 @@
 The goal of this analysis is to extract key business insights from customer order data across multiple months. By querying a structured database, we aim to uncover trends in sales, revenue, and customer behavior.
 
 ## Dataset Overview
+**Dataset Source:** The dataset used in this project was obtained from Break Into Tech's Data Analytics Certificate Course: https://www.dropbox.com/scl/fi/vd10nx4bo5soq7xg78sdg/BIT_DB?rlkey=0yh592o2nl1766n8l6hod5uc9&e=1&dl=0
+
 The dataset consists of multiple tables:
 
 - `JanSales`: Contains order data for January.
