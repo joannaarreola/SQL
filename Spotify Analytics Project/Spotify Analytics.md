@@ -4,7 +4,7 @@
 The goal of this project is to analyze Spotify's Top 50 song dataset using SQL to uncover trends in music popularity, artist performance, and song characteristics. By performing various queries, we aim to identify the most popular artists, explore correlations between musical features, and rank songs based on key metrics
 
 ## Dataset Overview
-**Dataset Source:** The dataset used in this project was obtained from Kaggle: 
+**Dataset Source:** The dataset used in this project was obtained from Break Into Tech's Data Analytics Certificate Course and can be found in the same folder as this project.
 
 The dataset consists of a single table:
 
