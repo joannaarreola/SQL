@@ -12,20 +12,59 @@ The dataset consists of a single table:
 
 Key columns include:
 
-`id`: Unique identifier for each song.
-artist_name: Name of the artist.
-track_name: Title of the song.
-popularity: Popularity score of the song (higher means more popular).
-danceability: A score representing how suitable the song is for dancing.
-energy: A measure of the song’s intensity and activity level.
-loudness: The overall loudness of the track in decibels (dB).
-tempo: The speed of the song, measured in beats per minute (BPM).
-duration_ms: Song duration in milliseconds.
+- `id`: Unique identifier for each song.
+- `artist_name`: Name of the artist.
+- `track_name`: Title of the song.
+- `popularity`: Popularity score of the song (higher means more popular).
+- `danceability`: A score representing how suitable the song is for dancing.
+- `energy`: A measure of the song’s intensity and activity level.
+- `loudness`: The overall loudness of the track in decibels (dB).
+- `tempo`: The speed of the song, measured in beats per minute (BPM).
+- `duration_ms`: Song duration in milliseconds.
+
+## Data Preparation
+Before analyzing the data, I first structured it in a SQL database. I performed the following steps:
+
+Created a Table Schema:
+
+- Defined appropriate data types for each column to ensure consistency and accuracy.
+- Used `INTEGER`, `DECIMAL`, and `VARCHAR` data types based on the nature of each attribute.
+- Set `NOT NULL` constraints to enforce data integrity.
+```
+--Created the table: 
+CREATE TABLE BIT_DB.Spotifydata (
+id integer PRIMARY KEY,
+artist_name varchar NOT NULL,
+track_name varchar NOT NULL,
+track_id varchar NOT NULL,
+popularity integer NOT NULL,
+danceability decimal(4,3) NOT NULL,
+energy decimal(4,3) NOT NULL,
+key integer NOT NULL,
+loudness decimal(5,3) NOT NULL,
+mode integer NOT NULL,
+speechiness decimal(5,4) NOT NULL,
+acousticness decimal(6,5) NOT NULL,
+instrumentalness text NOT NULL,
+liveness decimal(5,4) NOT NULL,
+valence decimal(4,3) NOT NULL,
+tempo decimal(6,3) NOT NULL,
+duration_ms integer NOT NULL,
+time_signature integer NOT NULL 
+)
+```
+
+Loaded the CSV File into SQL:
+
+- Inserted the data into the structured table.
+- Ensured that the data was correctly mapped to the defined schema.
+
+Initial Exploration:
+
+- Checked for missing values, duplicates, or incorrect data types.
+- Verified that the data loaded correctly by running SELECT queries to inspect the first few rows.
 
 ## Data Cleaning
-Before analyzing the dataset, we need to clean the orderID column, which contains missing and potentially invalid values. Specifically:
-- Some rows have missing Order IDs. These should be removed.
-- Valid Order IDs should always be 6-character alphanumeric values.
 
 
 ## Key Business Questions and analysis
@@ -49,29 +88,6 @@ AND orderid <> 'Order ID';
 
 ## Next Steps
 
-
-
---Created the table: 
-CREATE TABLE BIT_DB.Spotifydata (
-id integer PRIMARY KEY,
-artist_name varchar NOT NULL,
-track_name varchar NOT NULL,
-track_id varchar NOT NULL,
-popularity integer NOT NULL,
-danceability decimal(4,3) NOT NULL,
-energy decimal(4,3) NOT NULL,
-key integer NOT NULL,
-loudness decimal(5,3) NOT NULL,
-mode integer NOT NULL,
-speechiness decimal(5,4) NOT NULL,
-acousticness decimal(6,5) NOT NULL,
-instrumentalness text NOT NULL,
-liveness decimal(5,4) NOT NULL,
-valence decimal(4,3) NOT NULL,
-tempo decimal(6,3) NOT NULL,
-duration_ms integer NOT NULL,
-time_signature integer NOT NULL 
-)
 
 --Inserted Spotify Data .csv into the table.
 
