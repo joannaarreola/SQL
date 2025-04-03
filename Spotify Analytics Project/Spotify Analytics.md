@@ -64,61 +64,162 @@ Initial Exploration:
 ## Key Business Questions and analysis
 
 ### **1. Music Popularity**
-Rank songs based on their popularity and streaming performance.
-A. Trends in Music Popularity
-Top 10 Most Popular Songs by Streams:
-This will allow you to see which songs are performing best in terms of overall popularity.
 
-Average Popularity of Songs by Genre:
-If your dataset includes genre data, this query can help explore how different genres are performing.
+**Question:** What are the top 5 songs by popularity score?
 
-Rank Songs by Popularity Score:
-If your dataset includes a popularity score, you can rank the songs directly based on this metric.
-
-Rank Songs by Streams:
-You might also want to rank based on total streams to see which tracks have the most plays.
-**Question:** How many unique orders were placed in January? in February?
-
-**Approach:** Used `COUNT(orderID)` with filters to clean data.
+**Approach:** ordered by popularity score and limited to 5
 ```
-SELECT COUNT(distinct orderID) FROM BIT_DB.JanSales
-WHERE length(orderid) = 6
-AND orderid <> 'Order ID';
+select track_name from Spotifydata
+order by popularity desc
+limit 5;
 ```
-***Insight:*** A total of 9268 orders were placed in January. 11507 orders were placed in February. Order volume increased by 24% from January to February.
+***Insight:*** 
 
-### **1. Artist Performance** 
-Identify the most popular artists by the number of songs they have in the top 50, total streams, or popularity.
-Top 10 Artists with Most Songs in the Top 50:
-This will show which artists have the highest number of songs in the top 50, which is a good indicator of an artist's overall performance.
+The top 5 songs were:
+1. good 4 you
+2. Bad Habits
+3. Heat Waves
+4. Yonaguni
+5. Blinding Lights
 
-Top 10 Artists by Total Streams:
-Identify which artists have the most streams across all their songs in the Top 50.
-### **1. Song Characteristics** 
-Explore correlations between various musical features such as energy, danceability, tempo, loudness, and popularity.
-Correlations Between Danceability and Popularity:
-Are songs that are more danceable generally more popular?
+### **2. Artist Performance** 
 
-Energy vs. Popularity:
-Explore whether higher energy levels correlate with popularity.
+**Question:** Calculate the average popularity for the artists in the Spotify data table. Then, for every artist with an average popularity of 90 or above, show their name, their average popularity, and label them as a “Top Star”.
 
-Valence (Positivity) and Popularity:
-Does a more positive (or happier) song tend to be more popular?
+**Approach:** Used a cte to store average popularities and selected those 90 or above
+```
+with pop_avgs as (
+select artist_name, avg(popularity) as avg_pop from Spotifydata
+group by artist_name
+)
 
-Average Tempo of Top 50 Songs:
-Get a sense of the tempo distribution in the Top 50.
+select artist_name, avg_pop, 'Top Star' as tag from pop_avgs
+where avg_pop >= 90
+order by avg_pop desc;
+```
+***Insight:*** 
 
-Rank Songs by Danceability:
-You could rank the songs based on their danceability score to see if more danceable songs tend to be more popular.
+The top stars were:
+1. Ed Sheeran
+2. Glass Animals
+3. Olivia Rodrigo
+4. The Neighbourhood
+5. The Weeknd
+6. Maneskin
+7. Harry Styles
+8. Justin Bieber
+9. Lil Nas X
 
+**Question:** Which artists have more than 1 song in the top 50?
 
+**Approach:** Counted the number of songs per artist and filtered for those appearing more than once.
+```
+select artist_name from Spotifydata
+group by artist_name
+having count(artist_name) > 1;
+```
+***Insight:*** 
+
+The artists with more than one song in the top 50 were:
+Ariana Grande
+BTS
+Bad Bunny
+Doja Cat
+Dua Lipa
+Lil Nas X
+Olivia Rodrigo
+The Kid LAROI
+The Weeknd
+
+**Question:** Which artist has the most songs in the top 50?
+
+**Approach:** Used count(artist_name) and limited to one result
+```
+select artist_name from Spotifydata
+group by artist_name
+order by count(artist_name) desc
+limit 1;
+```
+***Insight:*** The artist with the most songs in the top 50 was Olivia Rodrigo
+
+### **3. Song Characteristics** 
+
+**Question:** Are songs that are more danceable generally more popular?
+
+**Approach:** Found the min and max danceabilities to get a sense of the range. Observed the danceabilities of the top songs in comparison to the bottom. Averaged the danceability of the top and bottom 10 songs.
+
+```
+select min(danceability), max(danceability) from Spotifydata;
+
+select danceability from Spotifydata
+order by popularity desc;
+
+select avg(danceability) from (
+    select danceability from Spotifydata 
+    order by popularity desc 
+    limit 10
+) as top_10_avg;
+
+select avg(danceability) from (
+    select danceability from Spotifydata 
+    order by popularity asc 
+    limit 10
+) as bottom_10_avg;
+```
+
+***Insight:*** 
+- Minimum danceability was 0.38 and maximum was 0.903
+- The top songs' danceabilities were not starkly different from the bottom songs' danceabilities
+- The average danceability of the top 10 songs was 0.62. The average danceability of the bottom 10 songs was 0.76.
+- Danceability alone is not a good indication of a song's popularity
+
+Repeat analysis for energy, valence (positivity), and tempo
+
+***Insight:*** 
+
+- Energy, valence, and tempo alone are not good indicators of a song's popularity
+  
 ## Conclusion
-**Order Volume:**
-Which genres and artists are leading the charts.
+**Music Popularity:**
+- The top 5 songs were:
+1. good 4 you
+2. Bad Habits
+3. Heat Waves
+4. Yonaguni
+5. Blinding Lights
+   
+**Artist Performance:**
+- The top artists in terms of popularity were:
+1. Ed Sheeran
+2. Glass Animals
+3. Olivia Rodrigo
+4. The Neighbourhood
+5. The Weeknd
+6. Maneskin
+7. Harry Styles
+8. Justin Bieber
+9. Lil Nas X
 
-The key features (like danceability, energy, or tempo) that are most strongly correlated with popularity.
+- The artists with multiple songs in the top 50 were:
+  - Ariana Grande
+  - BTS
+  - Bad Bunny
+  - Doja Cat
+  - Dua Lipa
+  - Lil Nas X
+  - Olivia Rodrigo (the most songs out of all)
+  - The Kid LAROI
+  - The Weeknd
+   
+**Song Characteristics:** 
+- Danceability, energy, valence, and tempo alone are not good indicators of a song's popularity
 
-Any trends or patterns, like whether songs with higher tempo are generally more popular, or if certain artists dominate the charts in terms of number of songs or total streams.
+## Next steps
+- If the goal is simply to analyze the current top 50 songs and artists, this analysis provides a sufficient overview.
+- If the objective is to find deeper correlations with popularity, consider expanding the analysis by:
+  - Exploring a larger dataset, such as the top 100 songs
+  - Examining interactions between different musical features (e.g., how danceability and energy together influence popularity)
+  - Developing an artist popularity score based on multiple metrics (e.g., social media metrics, etc.).
 
 
 
