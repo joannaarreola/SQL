@@ -28,7 +28,10 @@ Key columns include:
 **A. Create staging stable**
 - First we create a staging table in order to edit the dataset while keeping the raw data intact.
 ```
-create table layoffs_staging as
+create table layoffs_staging
+like layoffs;
+
+insert layoffs_staging
 select * from layoffs;
 ```
 **B. Identify duplicate rows**
@@ -46,20 +49,20 @@ where row_num > 1;
 ```
 
 **C. Copy the data into a new table**
-- Next we copy the data with the newly created row_num column into a new table.
+- "We create a new table `layoffs_staging2` to store the data with the newly calculated row_num column, which helps in identifying and removing duplicate entries
 ```
-CREATE TABLE "layoffs_staging2" (
-    company text,
-    location text,
-    industry text,
-    total_laid_off int,
-    percentage_laid_off text,
-    date date,
-    stage text,
-    country text,
-    funds_raised_millions int,
-    row_num int
-);
+CREATE TABLE `layoffs_staging2` (
+    `company` text,
+    `location` text,
+    `industry` text,
+    `total_laid_off` int DEFAULT NULL,
+    `percentage_laid_off` text,
+    `date` date,
+    `stage` text,
+    `country` text,
+    `funds_raised_millions` int DEFAULT NULL,
+    `row_num` int
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 insert into layoffs_staging2
 select *,
@@ -69,50 +72,88 @@ percentage_laid_off, `date`, stage, country, funds_raised_millions) as row_num
 from layoffs_staging;
 ```
 **D. Delete duplicate entries**
-- Latslty we delete the duplicate entries we identified earlier
+- Lastly we delete the duplicate entries we identified earlier by filtering the `row_num` column
 ```
 delete from layoffs_staging2
 where row_num > 1;
 ```
 
 ### **2. Data Standardization**
-A. Update the company column
+**A. Update the company column**
 - Use trim to remove any leading or trailing spaces
+- Only the `industry` column appeared to have this issue
 ```
 update layoffs_staging2
 set company = trim(company);
 ```
-B. Update the industry column
-- Update all companies in the crypto industry to have a consistent value 
+**B. Update the industry column**
+- Update all companies in the crypto industry to have a consistent value
+- Only the crypto industry appeared to have this issue across all columns
 ```
 update layoffs_staging2
 set industry = 'Crypto'
 where industry like 'Crypto%';
 ```
-C. Update the country column
+**C. Update the country column**
 - Remove any trailing periods for companies in the United states
+- Only the United states value appeared to have this issue across all columns
 ```
-UPDATE layoffs_staging2
-SET country = CASE
-    WHEN country LIKE 'United States%' AND SUBSTR(country, LENGTH(country), 1) = '.'
-    THEN SUBSTR(country, 1, LENGTH(country) - 1)
-    ELSE country
-END
-WHERE country LIKE 'United States%';
+update layoffs_staging2
+set country = trim(trailing '.' from country)
+where country like 'United States%';
 ```
-D. Update the date column
+**D. Change the date column to a date datatype**
+- First change the text string to a date, then cast to date datatype
 ```
-UPDATE layoffs_staging2
-SET "date" = 
-    DATE(substr("date", 7, 4) || '-' || substr("date", 1, 2) || '-' || substr("date", 4, 2))
-WHERE "date" LIKE '%/%/%';
-```
+update layoffs_staging2
+set `date` = str_to_date(`date`, '%m/%d/%Y');
+
+alter table layoffs_staging2
+modify column `date` date;
+ ```
 ### **3. Address Null Values**
-### **4. Column Removal**
+**A. Identify null values**
+```
+select * from layoffs_staging2
+where industry is null
+or industry = '';
+```
+**B. Convert blanks into nulls**
+```
+update layoffs_staging2
+set industry = null
+where industry = '';
+```
+**C. Populate values for nulls**
+```
+update layoffs_staging2 t1
+join layoffs_staging2 t2
+on t1.company = t2.company
+set t1.industry = t2.industry
+where t1.industry is null
+and t2.industry is not null;
+```
 
+### **4. Row & Column Removal**
+**A. Identify and remove unecessary rows**
+- Rows without sufficient layoff data including totals and percentages will not be useful for our analysis
+```
+select * from layoffs_staging2
+where total_laid_off is null
+and percentage_laid_off is null;
 
+delete from layoffs_staging2
+where total_laid_off is null
+and percentage_laid_off is null;
+```
+B. Remove unecessary columns
+- We remove the previously created row_num column as it was for data cleaning purposes only
+```
+alter table layoffs_staging2
+drop column row_num;
+```
 
-## Key Business Questions and analysis
+## Exploratory Data Analysis
 
 ### **1. Music Popularity**
 
