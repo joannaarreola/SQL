@@ -1,7 +1,7 @@
 # Layoffs Analysis
 
 ## Objective
-The goal of this project is to analyze Spotify's Top 50 song dataset using SQL to uncover trends in music popularity, artist performance, and song characteristics. By performing various queries, we aim to identify the most popular artists, explore correlations between musical features, and rank songs based on key metrics
+The objective of this project is to perform comprehensive data cleaning and conduct initial exploratory data analysis (EDA) on a dataset containing information about layoffs from companies around the world. This includes identifying and handling missing or erroneous data, transforming variables as needed, and summarizing key statistics to uncover patterns and trends related to layoffs, such as industry, location, and time-based factors. The goal is to ensure the dataset is clean and ready for deeper analysis or modeling by addressing data quality issues and gaining an initial understanding of the key insights and relationships within the data.
 
 ## Dataset Overview
 **Dataset Source:** The dataset used in this project was obtained from Alex the Analyst's Data Analytics Course and can be found in the same folder as this project as a json file.
@@ -155,160 +155,117 @@ drop column row_num;
 
 ## Exploratory Data Analysis
 
-### **1. Music Popularity**
+**Question:** What were the maximum number of people and percentage of the total company laid off in one round of layoffs?
 
-**Question:** What are the top 5 songs by popularity score?
-
-**Approach:** ordered by popularity score and limited to 5
+**Approach:** 
 ```
-select track_name from Spotifydata
-order by popularity desc
-limit 5;
+select max(total_laid_off), max(percentage_laid_off) from layoffs_staging2;
 ```
-***Insight:*** 
+***Insight:***  
+-The maximum number of people laid off was 12000
+-The maximum percent laid off was 100%
 
-The top 5 songs were:
-1. good 4 you
-2. Bad Habits
-3. Heat Waves
-4. Yonaguni
-5. Blinding Lights
+**Question:** Which companies went completely under? (percent laid off = 100%)
 
-### **2. Artist Performance** 
-
-**Question:** Calculate the average popularity for the artists in the Spotify data table. Then, for every artist with an average popularity of 90 or above, show their name, their average popularity, and label them as a “Top Star”.
-
-**Approach:** Used a cte to store average popularities and selected those 90 or above
+**Approach:** 
 ```
-with pop_avgs as (
-select artist_name, avg(popularity) as avg_pop from Spotifydata
-group by artist_name
+select * from layoffs_staging2
+where percentage_laid_off = 1;
+```
+
+***Insight:*** A lot of the companies that went out of business were start-ups.
+
+**Question:** What are the layoff totals per company?
+
+**Approach:** 
+```
+select company, sum(total_laid_off) from layoffs_staging2
+group by company
+order by 2 desc;
+```
+
+**Question:** What is the date range of this dataset?
+
+**Approach:** 
+```
+select min(`date`), max(`date`) from layoffs_staging2;
+```
+***Insight:*** The date range is 3/11/2020 to 3/6/2023
+
+**Question:** What industry was most affected by these layoffs?
+
+**Approach:** 
+
+```
+select industry, sum(total_laid_off) from layoffs_staging2
+group by industry
+order by 2 desc;
+```
+
+***Insight:*** The consumer industry was most affected by the layoffs in this dataset
+
+**Question:** Which country was most affected by these layoffs?
+
+**Approach:** 
+
+```
+select country, sum(total_laid_off) from layoffs_staging2
+group by country
+order by 2 desc;
+```
+
+***Insight:*** The United States was most affected by the layoffs in this dataset
+
+**Question:** What were the total layoffsper year?
+
+**Approach:** 
+
+```
+select year(`date`), sum(total_laid_off) from layoffs_staging2
+group by year(`date`)
+order by 1 desc;
+```
+
+**Question:** Display a rolling sum of layoffs by month
+
+**Approach:** 
+
+```
+with rolling_total as(
+select substring(`date`, 1, 7) as `month` , sum(total_laid_off) as total_off
+from layoffs_staging2
+where substring(`date`, 1, 7) is not null
+group by `month`
+order by 1 asc
 )
-
-select artist_name, avg_pop, 'Top Star' as tag from pop_avgs
-where avg_pop >= 90
-order by avg_pop desc;
-```
-***Insight:*** 
-
-The top stars were:
-1. Ed Sheeran
-2. Glass Animals
-3. Olivia Rodrigo
-4. The Neighbourhood
-5. The Weeknd
-6. Maneskin
-7. Harry Styles
-8. Justin Bieber
-9. Lil Nas X
-
-**Question:** Which artists have more than 1 song in the top 50?
-
-**Approach:** Counted the number of songs per artist and filtered for those appearing more than once.
-```
-select artist_name from Spotifydata
-group by artist_name
-having count(artist_name) > 1;
-```
-***Insight:*** 
-
-The artists with more than one song in the top 50 were:
-Ariana Grande
-BTS
-Bad Bunny
-Doja Cat
-Dua Lipa
-Lil Nas X
-Olivia Rodrigo
-The Kid LAROI
-The Weeknd
-
-**Question:** Which artist has the most songs in the top 50?
-
-**Approach:** Used count(artist_name) and limited to one result
-```
-select artist_name from Spotifydata
-group by artist_name
-order by count(artist_name) desc
-limit 1;
-```
-***Insight:*** The artist with the most songs in the top 50 was Olivia Rodrigo
-
-### **3. Song Characteristics** 
-
-**Question:** Are songs that are more danceable generally more popular?
-
-**Approach:** Found the min and max danceabilities to get a sense of the range. Observed the danceabilities of the top songs in comparison to the bottom. Averaged the danceability of the top and bottom 10 songs.
-
-```
-select min(danceability), max(danceability) from Spotifydata;
-
-select danceability from Spotifydata
-order by popularity desc;
-
-select avg(danceability) from (
-    select danceability from Spotifydata 
-    order by popularity desc 
-    limit 10
-) as top_10_avg;
-
-select avg(danceability) from (
-    select danceability from Spotifydata 
-    order by popularity asc 
-    limit 10
-) as bottom_10_avg;
+select `month`, total_off, sum(total_off) over(order by `month`) as rolling_total2
+from rolling_total;
 ```
 
-***Insight:*** 
-- Minimum danceability was 0.38 and maximum was 0.903
-- The top songs' danceabilities were not starkly different from the bottom songs' danceabilities
-- The average danceability of the top 10 songs was 0.62. The average danceability of the bottom 10 songs was 0.76.
-- Danceability alone is not a good indication of a song's popularity
+**Question:** Display the top 5 companies that laid off the most employees per year
 
-Repeat analysis for energy, valence (positivity), and tempo
+**Approach:** 
 
-***Insight:*** 
-
-- Energy, valence, and tempo alone are not good indicators of a song's popularity
+```
+with company_year (company, years, total_laid_off) as (
+select company, year(`date`), sum(total_laid_off)
+from layoffs_staging2
+group by company, year(`date`)
+),
+company_year_rank as(
+select *,
+dense_rank() over(partition by years order by total_laid_off desc) as ranking
+from company_year
+where years is not null
+)
+select * from company_year_rank
+where ranking <= 5;
+```
   
 ## Conclusion
-**Music Popularity:**
-- The top 5 songs were:
-1. good 4 you
-2. Bad Habits
-3. Heat Waves
-4. Yonaguni
-5. Blinding Lights
-   
-**Artist Performance:**
-- The top artists in terms of popularity were:
-1. Ed Sheeran
-2. Glass Animals
-3. Olivia Rodrigo
-4. The Neighbourhood
-5. The Weeknd
-6. Maneskin
-7. Harry Styles
-8. Justin Bieber
-9. Lil Nas X
-
-- The artists with multiple songs in the top 50 were:
-  - Ariana Grande
-  - BTS
-  - Bad Bunny
-  - Doja Cat
-  - Dua Lipa
-  - Lil Nas X
-  - Olivia Rodrigo (the most songs out of all)
-  - The Kid LAROI
-  - The Weeknd
-   
-**Song Characteristics:** 
-- Danceability, energy, valence, and tempo alone are not good indicators of a song's popularity
+- Through the data cleaning process, we addressed missing values, corrected inconsistencies, and ensured the dataset is in a usable format.
+- The initial exploratory data analysis revealed trends in layoffs related to industry, region, and time period.
 
 ## Next steps
-- If the goal is simply to analyze the current top 50 songs and artists, this analysis provides a sufficient overview.
-- If the objective is to find deeper correlations with popularity, consider expanding the analysis by:
-  - Exploring a larger dataset, such as the top 100 songs
-  - Examining interactions between different musical features (e.g., how danceability and energy together influence popularity)
-  - Developing an artist popularity score based on multiple metrics (e.g., social media metrics, etc.).
+- Next steps will involve conducting more detailed analysis to identify the key drivers of layoffs and potential predictive modeling. We may also look into segmenting the data by company size or explore additional factors, such as economic or political events, that could explain layoff trends.
+
