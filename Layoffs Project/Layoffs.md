@@ -4,7 +4,7 @@
 The objective of this project is to perform comprehensive data cleaning and conduct initial exploratory data analysis (EDA) on a dataset containing information about layoffs from companies around the world. This includes identifying and handling missing or erroneous data, transforming variables as needed, and summarizing key statistics to uncover patterns and trends related to layoffs, such as industry, location, and time-based factors. The goal is to ensure the dataset is clean and ready for deeper analysis or modeling by addressing data quality issues and gaining an initial understanding of the key insights and relationships within the data.
 
 ## Dataset Overview
-**Dataset Source:** The dataset used in this project was obtained from Alex the Analyst's Data Analytics Course and can be found in the same folder as this project as a json file.
+**Dataset Source:** The dataset used in this project was obtained from Alex the Analyst's Data Analytics Course and can be found in the same folder as this project as a csv file.
 
 The dataset consists of a single table:
 
@@ -49,7 +49,7 @@ where row_num > 1;
 ```
 
 **C. Copy the data into a new table**
-- "We create a new table `layoffs_staging2` to store the data with the newly calculated row_num column, which helps in identifying and removing duplicate entries
+- We create a new table `layoffs_staging2` to store the data with the newly calculated row_num column, which helps in identifying and removing duplicate entries
 ```
 CREATE TABLE `layoffs_staging2` (
     `company` text,
@@ -72,7 +72,7 @@ percentage_laid_off, `date`, stage, country, funds_raised_millions) as row_num
 from layoffs_staging;
 ```
 **D. Delete duplicate entries**
-- Lastly we delete the duplicate entries we identified earlier by filtering the `row_num` column
+- Lastly we delete the duplicate entries identified earlier by filtering the `row_num` column
 ```
 delete from layoffs_staging2
 where row_num > 1;
@@ -81,14 +81,14 @@ where row_num > 1;
 ### **2. Data Standardization**
 **A. Update the company column**
 - Use trim to remove any leading or trailing spaces
-- Only the `industry` column appeared to have this issue
+- Other columns were check but only the `industry` column appeared to have this issue
 ```
 update layoffs_staging2
 set company = trim(company);
 ```
 **B. Update the industry column**
 - Update all companies in the crypto industry to have a consistent value
-- Only the crypto industry appeared to have this issue across all columns
+- Other columns and values in the industry column were checked, but only the crypto industry appeared to have this issue
 ```
 update layoffs_staging2
 set industry = 'Crypto'
@@ -96,7 +96,7 @@ where industry like 'Crypto%';
 ```
 **C. Update the country column**
 - Remove any trailing periods for companies in the United states
-- Only the United states value appeared to have this issue across all columns
+- Other columns and vaues in the country column were checked, but only the United states value appeared to have this issue
 ```
 update layoffs_staging2
 set country = trim(trailing '.' from country)
@@ -104,6 +104,7 @@ where country like 'United States%';
 ```
 **D. Change the date column to a date datatype**
 - First change the text string to a date, then cast to date datatype
+- All other columns were of the correct data type
 ```
 update layoffs_staging2
 set `date` = str_to_date(`date`, '%m/%d/%Y');
@@ -113,18 +114,21 @@ modify column `date` date;
  ```
 ### **3. Address Null Values**
 **A. Identify null values**
+- We use the industry column since we can populate some of these values
 ```
 select * from layoffs_staging2
 where industry is null
 or industry = '';
 ```
 **B. Convert blanks into nulls**
+- We convert the blanks into nulls in order to work will them more easily
 ```
 update layoffs_staging2
 set industry = null
 where industry = '';
 ```
 **C. Populate values for nulls**
+- We use values from other rows to populate missing industry values for rows of the same company
 ```
 update layoffs_staging2 t1
 join layoffs_staging2 t2
@@ -162,8 +166,8 @@ drop column row_num;
 select max(total_laid_off), max(percentage_laid_off) from layoffs_staging2;
 ```
 ***Insight:***  
--The maximum number of people laid off was 12000
--The maximum percent laid off was 100%
+- The maximum number of people laid off was 12000
+- The maximum percent laid off was 100%
 
 **Question:** Which companies went completely under? (percent laid off = 100%)
 
@@ -242,6 +246,8 @@ select `month`, total_off, sum(total_off) over(order by `month`) as rolling_tota
 from rolling_total;
 ```
 
+***Insight:*** The biggest jumps in layoff numbers occurred in 2022
+
 **Question:** Display the top 5 companies that laid off the most employees per year
 
 **Approach:** 
@@ -264,8 +270,13 @@ where ranking <= 5;
   
 ## Conclusion
 - Through the data cleaning process, we addressed missing values, corrected inconsistencies, and ensured the dataset is in a usable format.
-- The initial exploratory data analysis revealed trends in layoffs related to industry, region, and time period.
+- The initial exploratory data analysis revealed trends in layoffs related to industry, region, and time period:
+    - A lot of the companies that went out of business were start-ups
+    - The date range is 3/11/2020 to 3/6/2023, with the biggest monthly increases in layoff numbers occurring in 2022
+    - The consumer industry was most affected by layoffs
+    - The United States was most affected by layoffs
 
 ## Next steps
-- Next steps will involve conducting more detailed analysis to identify the key drivers of layoffs and potential predictive modeling. We may also look into segmenting the data by company size or explore additional factors, such as economic or political events, that could explain layoff trends.
+- Next steps will involve conducting more detailed analysis to identify the key drivers of layoffs and potential predictive modeling.
+- We may also look into segmenting the data by company size or explore additional factors, such as economic or political events, that could explain layoff trends.
 
