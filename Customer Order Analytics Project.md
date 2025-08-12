@@ -21,8 +21,8 @@ Before analyzing the dataset, we need to clean the orderID column, which contain
 
 To ensure only valid Order IDs are included in our analysis, we will filter the data using the following SQL condition:
 ```
-WHERE length(order_id) = 6
-AND order_id <> 'Order ID'
+where length(order_id) = 6
+and order_id <> 'Order ID'
 ```
 This ensures that Order IDs are exactly 6 characters long (filtering out missing or incorrectly formatted entries).
 
@@ -33,9 +33,9 @@ This ensures that Order IDs are exactly 6 characters long (filtering out missing
 
 **Approach:** Used `COUNT(orderID)` with filters to clean data.
 ```
-SELECT COUNT(distinct orderID) FROM BIT_DB.JanSales
-WHERE length(orderid) = 6
-AND orderid <> 'Order ID';
+select count(distinct orderID) from BIT_DB.JanSales
+where length(orderid) = 6
+and orderid <> 'Order ID';
 ```
 *Repeat for February*
 
@@ -46,10 +46,10 @@ AND orderid <> 'Order ID';
 
 **Approach:** Used `SUM(price*quantity)` to calculate revenue and sorted by revenue `desc`
 ```
-SELECT Product, SUM(price*quantity) as Revenue FROM BIT_DB.JanSales
-GROUP BY Product
-ORDER BY Revenue DESC
-LIMIT 1;
+select Product, sum(price*quantity) as Revenue from BIT_DB.JanSales
+group by Product
+order by Revenue desc
+limit 1;
 ```
 *Repeat for February*
 
@@ -59,9 +59,9 @@ LIMIT 1;
 
 **Approach:** Grouped by `Product` and used `SUM(Quantity)`
 ```
-SELECT Product, sum(Quantity) FROM BIT_DB.JanSales 
-WHERE Product like '%Headphones%'
-GROUP BY Product
+select Product, sum(Quantity) from BIT_DB.JanSales 
+where Product like '%Headphones%'
+group by Product
 ```
 *Repeat for February*
 
@@ -71,9 +71,9 @@ GROUP BY Product
 
 **Approach:** Grouped by `Product` and used `SUM(Quantity)`
 ```
-SELECT Product, sum(Quantity) FROM BIT_DB.JanSales 
-GROUP BY Product
-ORDER BY sum(Quantity) desc
+select Product, sum(Quantity) from BIT_DB.JanSales 
+group by Product
+order by sum(Quantity) desc
 ```
 *Repeat for February*
 
@@ -84,11 +84,11 @@ ORDER BY sum(Quantity) desc
 
 **Approach:** Used `substr` to filter by city and calculated revenue per city.
 ```
-SELECT 
+select 
     substr(location, instr(location, ',') + 1, 
         instr(substr(location, instr(location, ',') + 1), ',') - 1) AS city,
     sum(price*quantity) as revenue
-FROM BIT_DB.JanSales
+from BIT_DB.JanSales
 group by city
 order by revenue desc
 ```
@@ -96,33 +96,45 @@ order by revenue desc
 
 ***Insight:*** The top 3 cities were San Francisco, Los Angeles, and New York City in both months. Revenue for San Francisco was 1.5x that of Los Angeles. Los Angeles and New York brought in similar numbers. The city that generated the least revenue was Austin in both months.
 
-**Question:** Identify the top performing products in each major revenue-generating city. Are there any differences in preferences?
+**Question:** Identify the top performing products in each city. Are there any differences in preferences?
 
-**Approach:** Used `substr` to filter by city and included product along with revenue per city.
+**Approach:** Used multiple ctes and a window function to first identify revenue per product by city, then rank those, and select the top 3 per city.
 ```
-SELECT 
-    substr(location, instr(location, ',') + 1, 
-        instr(substr(location, instr(location, ',') + 1), ',') - 1) AS city,
-    product,
-    sum(price*quantity) as revenue
-FROM BIT_DB.JanSales
-group by city, product
-order by revenue desc
+with revenue_per_product as (
+    select 
+        substr(location, instr(location, ',') + 1, 
+            instr(substr(location, instr(location, ',') + 1), ',') - 1) as city,
+        product,
+        sum(price * quantity) as revenue
+    from JanSales
+    group by city, product
+),
+
+product_rankings as (
+select city, product, revenue,
+    rank() over (partition by city order by revenue desc) AS revenue_rank
+from revenue_per_product
+)
+
+select city, product, revenue, revenue_rank
+from product_rankings
+where revenue_rank <= 3
+order by city, revenue_rank
 ```
 *Repeat for February*
 
-***Insight:*** The top products in San Francisco, Los Angeles and New York City were the Macbook Pro Laptop, iPhone, Google Phone, and ThinkPad Laptop.
+***Insight:*** The products repeatedly appearing in the top rankings are the Thinkpad laptop, Macbook pro laptop, iPhone, and Google phone in both months.
 
 ### **4. Customer Behavior**
 **Question:** How many customers placed orders in January and February?
 
 **Approach:** Used `DISTINCT` to count unique customer account numbers.
 ```
-SELECT count(distinct acctnum) FROM BIT_DB.customers
-INNER JOIN BIT_DB.JanSales
+select count(distinct acctnum) from BIT_DB.customers
+inner join BIT_DB.JanSales
 on customers.order_id = JanSales.orderid
-WHERE length(JanSales.orderid) = 6
-AND JanSales.orderid <> 'Order ID';
+where length(JanSales.orderid) = 6
+and JanSales.orderid <> 'Order ID';
 ```
 *Repeat for February*
 
@@ -132,10 +144,10 @@ AND JanSales.orderid <> 'Order ID';
 
 **Approach:** Used joins to join both months to the `customers` table and used `COUNT(DISTINCT acctnum)`.
 ```
-SELECT count(DISTINCT customers.acctnum)
-FROM BIT_DB.customers
-JOIN BIT_DB.JanSales jan ON customers.order_id = jan.orderid
-JOIN BIT_DB.FebSales feb ON customers.order_id = feb.orderid
+select count(distinct customers.acctnum)
+from BIT_DB.customers
+join BIT_DB.JanSales jan ON customers.order_id = jan.orderid
+join BIT_DB.FebSales feb ON customers.order_id = feb.orderid
 ;
 ```
 ***Insight:*** 34 customers were repeat customers.
@@ -144,11 +156,11 @@ JOIN BIT_DB.FebSales feb ON customers.order_id = feb.orderid
 
 **Approach:** Used `COUNT(DISTINCT acctnum)` and `SUM(Quantity)`.
 ```
-SELECT SUM(Quantity)/COUNT(acctnum) FROM BIT_DB.JanSales
-LEFT JOIN BIT_DB.customers 
-ON JanSales.orderid=customers.order_id
-WHERE length(orderid) = 6 
-AND orderid <> 'Order ID'
+select sum(Quantity)/count(acctnum) from BIT_DB.JanSales
+left join BIT_DB.customers 
+on JanSales.orderid=customers.order_id
+where length(orderid) = 6 
+and orderid <> 'Order ID'
 ```
 *Repeat for February*
 
@@ -158,12 +170,12 @@ AND orderid <> 'Order ID'
 
 **Approach:** Used `COUNT(DISTINCT acctnum)` and filtered to `Quantity` >= 2.
 ```
-SELECT COUNT(distinct customers.acctnum) FROM BIT_DB.JanSales
-LEFT JOIN BIT_DB.customers
-ON JanSales.orderid = customers.order_id 
-WHERE JanSales.Quantity >= 2
-AND length(orderid) = 6
-AND orderid <> 'Order ID';
+select count(distinct customers.acctnum) from BIT_DB.JanSales
+left join BIT_DB.customers
+on JanSales.orderid = customers.order_id 
+where JanSales.Quantity >= 2
+and length(orderid) = 6
+and orderid <> 'Order ID';
 ```
 *Repeat for February*
 
@@ -173,11 +185,11 @@ AND orderid <> 'Order ID';
 
 **Approach:** Divided `SUM(Quantity * price) by `COUNT(DISTINCT acctnum)`.
 ```
-SELECT SUM(Quantity*price)/COUNT(distinct acctnum) FROM BIT_DB.JanSales 
-LEFT JOIN BIT_DB.customers
-ON JanSales.orderid = customers.order_id 
-WHERE length(orderid) = 6
-AND orderid <> 'Order ID';
+select sum(Quantity*price)/count(distinct acctnum) from BIT_DB.JanSales 
+left join BIT_DB.customers
+on JanSales.orderid = customers.order_id 
+where length(orderid) = 6
+and orderid <> 'Order ID';
 ```
 *Repeat for February*
 
