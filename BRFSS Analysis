@@ -4,14 +4,13 @@
 The objective of this project is to explore health behaviors across US states using BRFSS data, focusing on BMI, smoking, and exercise.
 
 ## Dataset Overview
-**Dataset Source:** Kaggle (https://www.kaggle.com/datasets/isuruprabath/brfss-2023-csv-dataset?resource=download) (also included in this project folder)
+**Dataset Source:** Kaggle (https://www.kaggle.com/datasets/isuruprabath/brfss-2023-csv-dataset?resource=download). Also included in this project folder
 
-The Behavioral Risk Factor Surveillance System (BRFSS) is a comprehensive health survey in the United States, initiated in 1984 by the Centers for Disease Control and Prevention (CDC). It is designed to collect data on behavioral risk factors, chronic health conditions, and the use of preventive services among adults aged 18 and older. The BRFSS is notable for being the largest continuously conducted health survey system globally, with over 400,000 adult interviews completed annually across all 50 states, the District of Columbia, Puerto Rico, Guam, and the U.S. Virgin Islands.
+The Behavioral Risk Factor Surveillance System (BRFSS) is a comprehensive health survey in the United Statesconducted annually by the CDC since 1984. It collects data on behavioral risk factors, chronic health conditions, and the use of preventive services among adults aged 18 and older. With over 400,000 interviews completed each year across all 50 states, the District of Columbia, Puerto Rico, Guam, and the U.S. Virgin Islands, the BRFSS is the largest continuously conducted health survey system in the world.
 
-The dataset consists of a single table:
-Size: 433,323 rows × 350 columns 
+This dataset consists of a single table with 433,323 rows × 350 columns 
 
-Key columns include:
+Key columns for analysis:
 
 - `_state`: Numerical identifier for the respondent’s state.
 - `sexvar`: Numerical identifier for sex (male/female).
@@ -22,18 +21,11 @@ Key columns include:
 
 ## Data Loading and Inspection
 
-Imported Pandas and loaded the BRFSS dataset into a DataFrame. Previewed the first few rows to get a sense of its structure. 
-The dataset has over 400,000 rows and 350 columns. Each row represents an individual survey response.
-The full list of column names was examined, and the BRFSS 2023 Codebook guided the selection of a subset of meaningful columns. This subset was used to create a new DataFrame for streamlined analysis.
-i selected these columns:
-- `_state`: Numerical identifier for the respondent’s state.
-- `sexvar`: Numerical identifier for sex (male/female).
-- `_age80`: Categorical age variable, with ages above 80 collapsed into a single category.
-- `_bmi5cat`: Categorical Body Mass Index (BMI) classification.
-- `_smoker3`: Four-level smoking status: everyday smoker, someday smoker, former smoker, non-smoker.
-- `exerany2`: Categorical indicator of whether the respondent engages in any physical exercise.
-Inspect the dataset to understand its structure and check for missing values. This ensures that all columns are of the expected type and helps identify any nulls that may need to be addressed in the cleaning process.
-The selected columns mostly have numeric data types. `_bmi5cat` and `exerany2` have some missing values, which will need to be addressed during the cleaning stage. All other columns are complete.
+The dataset was loaded into a Pandas DataFrame for exploration. Initial inspection using head(), info(), and column enumeration provided an overview of the dataset’s structure.
+
+The full list of column names was reviewed, and the BRFSS 2023 Codebook was used to select a subset of meaningful columns. A new DataFrame containing only these key columns was created for focused analysis.
+
+Inspection of the selected columns revealed that most are numeric or categorical as expected. `_bmi5cat` and `exerany2` contain some missing values, which will be addressed during the cleaning stage. All other columns are complete and ready for analysis.
 
 ## Data Cleaning
 
