@@ -29,38 +29,7 @@ Inspection of the selected columns revealed that most are numeric or categorical
 
 ## Data Cleaning
 
-### **1. Remove Duplicates**
-
-**B. Identify duplicate rows**
-
-**C. Copy the data into a new table**
-
-**D. Delete duplicate entries**
-
-
-### **2. Data Standardization**
-**A. Update the company column**
-
-**B. Update the industry column**
-
-**C. Update the country column**
-
-
-**D. Change the date column to a date datatype**
-
-### **3. Address Null Values**
-**A. Identify null values**
-
-
-**B. Convert blanks into nulls**
-
-**C. Populate values for nulls**
-
-
-### **4. Row & Column Removal**
-**A. Identify and remove unecessary rows**
-
-B. Remove unecessary columns
+The dataset was thoroughly cleaned and standardized before analysis. Missing values were addressed first: the categorical `exerany2` column had 2 missing values, which were imputed with the mode. Additionally, special codes representing "Not sure/Don't know" (7.0) and "Refused to answer" (9.0), totaling 1,249 responses (~0.3% of the dataset), were also treated as missing and imputed with the mode. The `bmi5cat` column had 40,535 missing values (~9.4% of the dataset), which were imputed using the median BMI within each gender-age category group to preserve realistic variation. Throughout the cleaning process, `value_counts()` was used to verify that all categorical columns contained only expected values, with no formatting inconsistencies, unexpected codes, or duplicated representations (e.g., 1 vs 1.0). All columns were consistent with predefined categories, indicating the data is clean, standardized, and ready for analysis.
 
 
 ## Exploratory Data Analysis
