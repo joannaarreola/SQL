@@ -1,7 +1,7 @@
 # BRFSS Analysis
 
 ## Objective
-The objective of this project is to explore health behaviors across US states using BRFSS data, focusing on BMI, smoking, and exercise.
+The objective of this project is to indentify demographic and socioeconomic factors associated with smoking status in the U.S.
 
 ## Dataset Overview
 **Dataset Source:** Kaggle (https://www.kaggle.com/datasets/isuruprabath/brfss-2023-csv-dataset?resource=download). Also included in this project folder
