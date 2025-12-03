@@ -6,7 +6,7 @@ The full end-to-end project document can be found here: https://github.com/joann
 
 ## Files
 
-- `brfss_smoking_analysis.sql`: Annotated SQL script with data checks, aggregations, and rankings.
+- `BRFSS Smoking Analysis - SQL.sql`: Annotated SQL script with data checks, aggregations, and rankings.
 - `sql_results/`: Screenshots of key tables, including top 5 high-risk demographic groups.
 - `README.md`: This overview file.
 
