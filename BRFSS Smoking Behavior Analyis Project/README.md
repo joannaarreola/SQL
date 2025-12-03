@@ -10,7 +10,4 @@ The full end-to-end project document can be found here: https://github.com/joann
 - `sql_results/`: Screenshots of key tables, including top 5 high-risk demographic groups.
 - `README.md`: This overview file.
 
-## How to View
-
-Open `brfss_smoking_analysis.sql` in any SQL environment to run queries. Screenshots in `sql_results/` illustrate key outputs.
 
