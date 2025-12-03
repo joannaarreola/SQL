@@ -2,7 +2,7 @@
 
 This project analyzes 2023 BRFSS data to explore smoking patterns across demographics. The SQL portion of the project can be found in this folder.
 
-The full end-to-end project document can be found here:
+The full end-to-end project document can be found here: https://github.com/joannaarreola/Python/tree/main/BRFSS%20Smoking%20Analysis
 
 ## Files
 
